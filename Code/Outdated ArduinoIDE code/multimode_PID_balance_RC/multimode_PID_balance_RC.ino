@@ -1,8 +1,10 @@
-#include <Servo.h>
-#include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
-#include "PID_v1.h"
-#include <SoftwareSerial.h>
+#include <Arduino.h>
+#include <Servo>
+//#include I2Cdev
+//#include "MPU6050_6Axis_MotionApps20.h"
+#include <PID>
+#include <SoftwareSerial>
+#include <MPU6050>
 
 
 //code control vars
@@ -143,9 +145,11 @@ struct angles leg3_final;
 struct angles leg4_final;
 
 //IMU setup
+
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    #include "Wire.h"
+    #include Wire.h
 #endif
+
 
 MPU6050 mpu;
 #define OUTPUT_READABLE_YAWPITCHROLL

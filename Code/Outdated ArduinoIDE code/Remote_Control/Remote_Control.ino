@@ -1,6 +1,6 @@
-#include <LiquidCrystal.h>
-#include <Bounce2.h>
-#include <SoftwareSerial.h>
+#include LiquidCrystal.h
+#include Bounce2.h
+#include SoftwareSerial.h
 
 String datapacket;
 

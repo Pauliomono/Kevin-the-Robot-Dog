@@ -22,22 +22,22 @@ void setup()
     Serial.println("Enter AT commands:");
  
     // HC-06 default serial speed is 9600
-    SerialBT.begin(38400);  
+    Serial4.begin(9600);  
 }
  
 void loop()
 {
  
     // Keep reading from HC-06 and send to Arduino Serial Monitor
-    if (SerialBT.available() > 0)
+    if (Serial4.available() > 0)
     {  
-        Serial.write(SerialBT.read());
+        Serial.write(Serial4.read());
     }
  
     // Keep reading from Arduino Serial Monitor and send to HC-06
     if (Serial.available() > 0)
     {
-        SerialBT.write(Serial.read());
+        Serial4.write(Serial.read());
     }
    
 
