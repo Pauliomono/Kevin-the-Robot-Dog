@@ -27,17 +27,17 @@ int debug_point = 1;
 int n_debug_points = 3;
 
 // code control vars
-int state_time = 1000000; 
+int state_time = 100;
 int interpolation_interval;
 int n_interps = 20;
 int state = 1;
-int mode = 0; 
+int mode = 0;
 int n_states = 6;
 
 // timing vars
-float t0;
-float tf;
-float t;
+float t0 = 0;
+float tf = 1000;
+float t = 0;
 int t_old;
 int t_old_state;
 
@@ -80,7 +80,7 @@ double roll_angle2 = 0;
 double yaw1;
 float yaw2;
 float step_height = 20;
-float leg_height = 200;
+float leg_height = 180;
 int control_increment = 20;
 int motion_limit = 30;
 
@@ -220,6 +220,7 @@ void setup()
   Serial4.begin(9600); // 38400
 
   // set initial leg position
+
   x1.pos = 0;
   yy1.pos = 0;
   z1.pos = leg_height;
@@ -232,6 +233,35 @@ void setup()
   x4.pos = x1.pos;
   yy4.pos = yy1.pos;
   z4.pos = z1.pos;
+  offset();
+
+  // velocities
+  x1.vel = 0;
+  yy1.vel = 0;
+  z1.vel = 0;
+  x2.vel = 0;
+  yy2.vel = 0;
+  z2.vel = 0;
+  x3.vel = x1.vel_f;
+  yy3.vel = -yy1.vel_f;
+  z3.vel = z1.vel_f;
+  x4.vel = x2.vel_f;
+  yy4.vel = yy2.vel_f;
+  z4.vel = z2.vel_f;
+
+  // accelerations
+  x1.accel = 0;
+  yy1.accel = 0;
+  z1.accel = 0;
+  x2.accel = 0;
+  yy2.accel = 0;
+  z2.accel = 0;
+  x3.accel = x1.accel;
+  yy3.accel = -yy1.accel;
+  z3.accel = z1.accel;
+  x4.accel = x2.accel;
+  yy4.accel = yy2.accel;
+  z4.accel = z2.accel;
 
   x1.pos_f = 0;
   yy1.pos_f = 0;
@@ -245,6 +275,35 @@ void setup()
   x4.pos_f = x1.pos_f;
   yy4.pos_f = yy1.pos_f;
   z4.pos_f = z1.pos_f;
+  offset();
+
+  // velocities
+  x1.vel_f = 0;
+  yy1.vel_f = 0;
+  z1.vel_f = 0;
+  x2.vel_f = 0;
+  yy2.vel_f = 0;
+  z2.vel_f = 0;
+  x3.vel_f = x1.vel_f;
+  yy3.vel_f = -yy1.vel_f;
+  z3.vel_f = z1.vel_f;
+  x4.vel_f = x2.vel_f;
+  yy4.vel_f = yy2.vel_f;
+  z4.vel_f = z2.vel_f;
+
+  // accelerations
+  x1.accel_f = 0;
+  yy1.accel_f = 0;
+  z1.accel_f = 0;
+  x2.accel_f = 0;
+  yy2.accel_f = 0;
+  z2.accel_f = 0;
+  x3.accel_f = x1.accel_f;
+  yy3.accel_f = -yy1.accel_f;
+  z3.accel_f = z1.accel_f;
+  x4.accel_f = x2.accel_f;
+  yy4.accel_f = yy2.accel_f;
+  z4.accel_f = z2.accel_f;
 
   // calculate inverse kinematics
   IK_interpolate2(t0, tf, t);
@@ -308,14 +367,14 @@ void setup()
 
 void loop()
 {
-  t = micros();
-  if (t - t_old_rc > 20000)
+  t = millis();
+  if (t - t_old_rc > 1)
   {
     t_old_rc = t;
     remoteIO();
   }
 #ifdef DEBUG_TIMER
-  //debug_timer(); // 1
+  // debug_timer(); // 1
 #endif
 
 // get IMU data (to add)
@@ -327,7 +386,7 @@ void loop()
 #endif
 
 #ifdef DEBUG_TIMER
-  //debug_timer(); // 2
+  // debug_timer(); // 2
 #endif
 
 #ifdef PID_BALANCE_ENABLE
@@ -338,7 +397,7 @@ void loop()
   rollPID.Compute();
 #endif
 #ifdef DEBUG_TIMER
-  //debug_timer(); // 3
+  // debug_timer(); // 3
 #endif
   // roll_angle1 = constrain(roll_angle1,-20,20);
   // roll2PID.Compute();
@@ -356,22 +415,50 @@ void loop()
       t_old_state = t;
       t0 = t;
       tf = t0 + state_time;
+
+      // define leg positions
+      x1.pos_f = x_dist;
+      yy1.pos_f = steer2;
+      z1.pos_f = leg_height;
+      x2.pos_f = x1.pos_f;
+      yy2.pos_f = yy1.pos_f;
+      z2.pos_f = leg_height;
+      x3.pos_f = -x1.pos_f;
+      yy3.pos_f = steer2;
+      z3.pos_f = leg_height;
+      x4.pos_f = -x1.pos_f;
+      yy4.pos_f = yy3.pos_f;
+      z4.pos_f = leg_height;
+      offset();
+
+      // velocities
+      x1.vel_f = 0;
+      yy1.vel_f = 0;
+      z1.vel_f = 0;
+      x2.vel_f = 0;
+      yy2.vel_f = 0;
+      z2.vel_f = 0;
+      x3.vel_f = x1.vel_f;
+      yy3.vel_f = -yy1.vel_f;
+      z3.vel_f = z1.vel_f;
+      x4.vel_f = x2.vel_f;
+      yy4.vel_f = yy2.vel_f;
+      z4.vel_f = z2.vel_f;
+
+      // accelerations
+      x1.accel_f = 0;
+      yy1.accel_f = 0;
+      z1.accel_f = 0;
+      x2.accel_f = 0;
+      yy2.accel_f = 0;
+      z2.accel_f = 0;
+      x3.accel_f = x1.accel_f;
+      yy3.accel_f = -yy1.accel_f;
+      z3.accel_f = z1.accel_f;
+      x4.accel_f = x2.accel_f;
+      yy4.accel_f = yy2.accel_f;
+      z4.accel_f = z2.accel_f;
     }
-
-    // define leg positions
-    x1.pos = x_dist;
-    yy1.pos = steer1;
-    z1.pos = leg_height;
-    x2.pos = x1.pos;
-    yy2.pos = yy1.pos;
-    z2.pos = leg_height;
-    x3.pos = -x1.pos;
-    yy3.pos = steer2;
-    z3.pos = leg_height;
-    x4.pos = -x1.pos;
-    yy4.pos = yy3.pos;
-    z4.pos = leg_height;
-
     balance();
 #ifdef DEBUG_TIMER
     debug_timer(); // 4
@@ -381,22 +468,30 @@ void loop()
     {
       t_old = t;
 
-/*// calculate inverse kinematics
-leg1_final = IK_final(x1, yy1, z1);
-leg2_final = IK_final(x2, yy2, z2);
-leg3_final = IK_final(x3, yy3, z3);
-leg4_final = IK_final(x4, yy4, z4);
-*/
-
       // interpolate to final angles
-      leg1 = IK_interpolate(leg1_final, leg1, t0, tf, t);
-      leg2 = IK_interpolate(leg2_final, leg2, t0, tf, t);
-      leg3 = IK_interpolate(leg3_final, leg3, t0, tf, t);
-      leg4 = IK_interpolate(leg4_final, leg4, t0, tf, t);
+      // IK_interpolate2(t - state_time/2, t + state_time/2, t);
+      IK_interpolate2(t0, tf, t);
 
-
+      leg1 = IK_final(x1.pos, yy1.pos, z1.pos);
+      leg2 = IK_final(x2.pos, yy2.pos, z2.pos);
+      leg3 = IK_final(x3.pos, yy3.pos, z3.pos);
+      leg4 = IK_final(x4.pos, yy4.pos, z4.pos);
       // write angles to servos
       write_servos();
+
+#ifdef PRINT_LEG_XYZ
+      Serial.print(x_dist);
+      Serial.print("\t");
+      Serial.print(steer2);
+      Serial.print("\t");
+      Serial.print(x1.pos);
+      Serial.print("\t");
+      Serial.print(yy1.pos);
+      Serial.print("\t");
+      Serial.print(z1.pos);
+      Serial.println("\t");
+#endif
+
 #ifdef DEBUG_TIMER
       debug_timer(); // 7
 #endif
@@ -449,14 +544,15 @@ leg4_final = IK_final(x4, yy4, z4);
       tf = t0 + state_time;
       state++;
 
-      if (state > n_states)
+      if (state > N_STATES)
       {
         state = 1;
       }
+      get_xyz();
     }
 
     // walking states - breaks step motion into 6 points (states)
-    get_xyz();
+    
 #ifdef PID_BALANCE_ENABLE
     balance();
 #endif
@@ -481,7 +577,7 @@ leg4_final = IK_final(x4, yy4, z4);
 
       // interpolate to final angles
       IK_interpolate2(t0, tf, t);
-      #ifdef DEBUG_TIMER
+#ifdef DEBUG_TIMER
       debug_timer(); // 5
 #endif
 
@@ -489,7 +585,7 @@ leg4_final = IK_final(x4, yy4, z4);
       leg2 = IK_final(x2.pos, yy2.pos, z2.pos);
       leg3 = IK_final(x3.pos, yy3.pos, z3.pos);
       leg4 = IK_final(x4.pos, yy4.pos, z4.pos);
-      #ifdef DEBUG_TIMER
+#ifdef DEBUG_TIMER
       debug_timer(); // 6
 #endif
 

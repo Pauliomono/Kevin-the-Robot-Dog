@@ -3,10 +3,10 @@
 void remoteIO(int X, int Y, bool b1, bool b2, bool b3, bool b4)
 {
   get_telemetry();
-  send_inputs(X, Y, b1, b2, b3, b4);
+  send_inputs_string(X, Y, b1, b2, b3, b4);
 }
 
-void send_inputs(int X, int Y, bool b1, bool b2, bool b3, bool b4)
+void send_inputs_int(int X, int Y, bool b1, bool b2, bool b3, bool b4)
 {
 
   if (X >= 0)
@@ -44,6 +44,42 @@ void send_inputs(int X, int Y, bool b1, bool b2, bool b3, bool b4)
   Serial.println(buttons);
 }
 
+void send_inputs_string(int X, int Y, bool b1, bool b2, bool b3, bool b4)
+{
+  String datapacket;
+  datapacket = "x";
+  datapacket += num2str(X);
+  datapacket += num2str(Y);
+  datapacket += bool2str(b1);
+  datapacket += bool2str(b2);
+  datapacket += bool2str(b3);
+  datapacket += bool2str(b4);
+  datapacket += "n";
+  
+  Serial.println(datapacket);
+  SerialBT.println(datapacket);
+}
+
+String num2str(int X){
+  String packet;
+  if (X >=0){
+    packet = "1";
+  }
+  else{
+    packet = "0";
+  }
+  if (abs(X) < 10){
+    packet += "00";
+  }
+  else if (abs(X) < 100){
+    packet += "0";
+  }
+
+  packet += abs(X);
+
+   return(packet);
+}
+
 String bool2str(bool X)
 {
   String packet;
@@ -74,3 +110,6 @@ void get_telemetry()
     }
   }
 }
+
+
+

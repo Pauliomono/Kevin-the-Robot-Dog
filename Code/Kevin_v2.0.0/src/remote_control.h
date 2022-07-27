@@ -14,5 +14,6 @@ extern int packet2;
 void remoteIO();
 void get_input();
 void send_telemetry();
+void assemble_input();
 
 #endif

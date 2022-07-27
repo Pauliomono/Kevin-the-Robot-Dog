@@ -10,8 +10,10 @@ extern int mode;
 extern SoftwareSerial SerialBT;
 
 void remoteIO(int X, int Y, bool b1, bool b2, bool b3, bool b4);
-void send_inputs(int X, int Y, bool b1, bool b2, bool b3, bool b4);
+void send_inputs_int(int X, int Y, bool b1, bool b2, bool b3, bool b4);
+void send_inputs_string(int X, int Y, bool b1, bool b2, bool b3, bool b4);
 String bool2str(bool X);
+String num2str(int X);
 void get_telemetry();
 
 

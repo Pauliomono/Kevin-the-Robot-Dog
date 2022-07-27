@@ -58,5 +58,6 @@ struct angles IK_final(float rx,float ry,float rz);
 struct angles IK_interpolate(struct angles leg_final, struct angles leg, float t0, float tf,float t);
 void IK_interpolate2(float t0, float tf,float t);
 void get_xyz();
+void offset();
 
 #endif

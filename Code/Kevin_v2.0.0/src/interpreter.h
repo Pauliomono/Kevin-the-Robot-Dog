@@ -12,11 +12,14 @@ extern double steer1;
 extern float steer2;
 extern int motion_limit;
 extern int state_time;
+extern int n_interps;
+extern int interpolation_interval;
 
 extern int xxx;
 extern int yyy;
 extern int packet;
 
 void interpret_input2(int packet);
+void interpret_input_string();
 
 #endif
