@@ -1,18 +1,80 @@
 #include <Arduino.h>
+#include <configuration.h>
 #include <LiquidCrystal.h>
 #include <Bounce2.h>
-#include <SoftwareSerial.h>
+// #include <AltSoftSerial.h>
 #include <Wire.h>
-
 #include <remote_control.h>
 
-unsigned int datapacket;
+int t = 0;
 int mode = 0;
+String datapacket;
+int xxx;
+int yyy;
+int packet;
+int tune_mode = 0;
+int int_store = 0;
+
+bool data_sent = 0;
+
+bool b1 = 0;
+bool b2 = 0;
+bool b3 = 0;
+bool b4 = 0;
+
+bool b1_send = 0;
+bool b2_send = 0;
+bool b3_send = 0;
+bool b4_send = 0;
+
+// foot position vars
+struct points x1;
+struct points yy1;
+struct points z1;
+struct points x2;
+struct points yy2;
+struct points z2;
+struct points x3;
+struct points yy3;
+struct points z3;
+struct points x4;
+struct points yy4;
+struct points z4;
+
+// motor angle vars
+struct angles leg1;
+struct angles leg2;
+struct angles leg3;
+struct angles leg4;
+
+// comms vars
+double yaw;
+double pitch;
+double roll;
+int state;
+float x_dist;
+float steer2;
+double x_accel;
+double y_accel;
+double z_accel;
+float kpp;
+float kip;
+float kdp;
+float kpr;
+float kir;
+float kdr;
+int comm_receive_step;
+int time_stamp;
+String mnemonic;
+union data_type comm_data;
+char double_buffer[8];
+struct comm comm_results;
+bool new_data;
 
 const int rs = 2, en = 3;
-LiquidCrystal lcd(rs, en, 4, 11, 6, 7);
+LiquidCrystal lcd(rs, en, 4, 5, 6, 7);
 
-SoftwareSerial SerialBT(13, 12); // RX | TX
+// AltSoftSerial SerialBT;//(13, 12); // RX | TX transmit 9, recieve 8
 
 byte full[8] = {
     B11111,
@@ -33,22 +95,24 @@ int X, Y;
 
 void setup()
 {
+  pinMode(13, INPUT_PULLUP);
   // put your setup code here, to run once:
-  button1.attach(10, INPUT_PULLUP);
-  button2.attach(9, INPUT_PULLUP);
-  button3.attach(8, INPUT_PULLUP);
-  button4.attach(0, INPUT_PULLUP);
+  button1.attach(9, INPUT_PULLUP);
+  button2.attach(10, INPUT_PULLUP);
+  button3.attach(11, INPUT_PULLUP);
+  button4.attach(12, INPUT_PULLUP);
   button1.setPressedState(LOW);
   button2.setPressedState(LOW);
   button3.setPressedState(LOW);
   button4.setPressedState(LOW);
+  button1.interval(10);
 
-  pinMode(A2, INPUT);
-  pinMode(A3, INPUT);
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
 
-  pinMode(5, OUTPUT);
+  pinMode(8, OUTPUT);
 
-  analogWrite(5, 80);
+  analogWrite(8, 80);
 
   lcd.createChar(0, full);
   lcd.begin(16, 2);
@@ -58,16 +122,16 @@ void setup()
 
   Serial.begin(9600);
   delay(3000);
-  SerialBT.begin(9600);
+  Serial4.begin(115200);
   lcd.clear();
 }
 
 void loop()
 {
+  t = millis();
   // put your main code here, to run repeatedly:
-
-  X = analogRead(A3);
-  Y = analogRead(A2);
+  X = analogRead(A0);
+  Y = analogRead(A1);
 
   X = map(X, 0, 1024, 99, -99);
   if ((X > -8) && (X < 5))
@@ -80,20 +144,79 @@ void loop()
     Y = 0;
   }
 
-  button1.update();
-  button2.update();
-  button3.update();
-  button4.update();
-  /*
-    sequence[0] = X;
-    sequence[1] = Y;
-    sequence[2] = button1.isPressed();
-    sequence[3] = button2.isPressed();
-    sequence[4] = button3.isPressed();
-    sequence[5] = button4.isPressed();
-    Serial.write(sequence, sizeof(sequence));
-    */
-  remoteIO(X, Y, button1.pressed(), button2.pressed(), button3.pressed(), button4.pressed());
+  if (t % 10 == 0)
+  {
+    button1.update();
+    button2.update();
+    button3.update();
+    button4.update();
+  }
+
+  if (button1.isPressed() && !b1_send)
+  {
+    b1 = 1;
+  }
+  if (b1_send)
+  {
+    b1 = 0;
+  }
+  if (!button1.isPressed())
+  {
+    b1_send = 0;
+  }
+
+  if (button2.isPressed() && !b2_send)
+  {
+    b2 = 1;
+  }
+  if (b2_send)
+  {
+    b2 = 0;
+  }
+  if (!button2.isPressed())
+  {
+    b2_send = 0;
+  }
+
+  if (button3.isPressed() && !b3_send)
+  {
+    b3 = 1;
+  }
+  if (b3_send)
+  {
+    b3 = 0;
+  }
+  if (!button3.isPressed())
+  {
+    b3_send = 0;
+  }
+
+  if (button4.isPressed() && !b4_send)
+  {
+    b4 = 1;
+  }
+  if (b4_send)
+  {
+    b4 = 0;
+  }
+  if (!button4.isPressed())
+  {
+    b4_send = 0;
+  }
+
+#ifdef COMM_MODE_STRING
+  remoteIO();
+#endif
+
+#ifdef COMM_MODE_INT
+  remoteIO();
+#endif
+
+#ifdef COMM_MODE_DESCRIPTIVE
+  comms_send();
+  comms_receive();
+  comms_interpreter();
+#endif
 
   // SerialBT.println(datapacket);
   // Serial.println(datapacket);
@@ -110,47 +233,110 @@ void loop()
   //Serial.print(",");
   Serial.write((byte)button4.isPressed());
   */
+  if (t % 50 == 0)
+  {
+    lcd.clear();
 
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("X");
-  if (X >= 0)
-  {
-    lcd.setCursor(2, 0);
-  }
-  lcd.print(X);
-  lcd.setCursor(5, 0);
-  lcd.print("Y");
-  if (Y >= 0)
-  {
-    lcd.setCursor(7, 0);
-  }
-  lcd.print(Y);
+    // display joystick input
+    lcd.setCursor(0, 0);
+    lcd.print("X");
+    if (X >= 0)
+    {
+      lcd.setCursor(2, 0);
+    }
+    lcd.print(X);
+    lcd.setCursor(5, 0);
+    lcd.print("Y");
+    if (Y >= 0)
+    {
+      lcd.setCursor(7, 0);
+    }
+    lcd.print(Y);
 
-  lcd.setCursor(11, 0);
-  lcd.print("MODE");
-  lcd.print(mode);
+    // display mode
+    lcd.setCursor(11, 0);
+    lcd.print("MODE");
+    lcd.print(mode);
 
-  if (button1.isPressed())
-  {
-    lcd.setCursor(0, 1);
-    lcd.write(byte(0));
-  }
-  if (button2.isPressed())
-  {
-    lcd.setCursor(7, 1);
-    lcd.write(byte(0));
-  }
-  if (button3.isPressed())
-  {
-    lcd.setCursor(14, 1);
-    lcd.write(byte(0));
-  }
-  if (button4.isPressed())
-  {
-    lcd.setCursor(15, 1);
-    lcd.write(byte(0));
-  }
+    // display translation values recieved back from kevin for modes 0 and 1
+    if (mode == 0 || mode == 1)
+    {
+      lcd.setCursor(0, 1);
+      lcd.print("x");
+      if (xxx >= 0)
+      {
+        lcd.setCursor(2, 1);
+      }
+      lcd.print(xxx);
+      lcd.setCursor(5, 1);
+      lcd.print("y");
+      if (yyy >= 0)
+      {
+        lcd.setCursor(7, 1);
+      }
+      lcd.print(yyy);
+    }
 
-  delay(100);
+    // display PID tuning data
+    if (mode == 2 || mode == 3)
+    {
+      lcd.setCursor(0, 1);
+      lcd.print("p");
+      int_store = xxx / 100;
+      lcd.print(int_store);
+      lcd.print(".");
+      if (xxx - (int_store * 100) < 10)
+      {
+        lcd.print(0);
+      }
+      lcd.print(xxx - (int_store * 100));
+
+      lcd.setCursor(5, 1);
+      lcd.print("r");
+      int_store = yyy / 100;
+      lcd.print(int_store);
+      lcd.print(".");
+      if (yyy - (int_store * 100) < 10)
+      {
+        lcd.print(0);
+      }
+      lcd.print(yyy - (int_store * 100));
+
+      lcd.setCursor(15, 1);
+      if (tune_mode == 0)
+      {
+        lcd.print("P");
+      }
+      if (tune_mode == 1)
+      {
+        lcd.print("I");
+      }
+      if (tune_mode == 2)
+      {
+        lcd.print("D");
+      }
+    }
+
+    if (b1)
+    {
+      lcd.setCursor(13, 1);
+      lcd.write(byte(0));
+      b1 = 0;
+    }
+    if (button2.isPressed())
+    {
+      lcd.setCursor(14, 1);
+      lcd.write(byte(0));
+    }
+    if (button3.isPressed())
+    {
+      lcd.setCursor(15, 1);
+      lcd.write(byte(0));
+    }
+    if (button4.isPressed())
+    {
+      lcd.setCursor(15, 1);
+      lcd.write(byte(0));
+    }
+  }
 }

@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 #include <Servo.h>
+#include <Adafruit_PWMServoDriver.h>
+#include <configuration.h>
+#include <balance_controller.h>
 
 extern Servo hip1;
 extern Servo shoulder1;
@@ -16,6 +19,7 @@ extern Servo knee3;
 extern Servo hip4;
 extern Servo shoulder4;
 extern Servo knee4;
+extern Adafruit_PWMServoDriver pwm;
 
 //leg angle structure
 struct angles{
@@ -30,5 +34,7 @@ extern struct angles leg3;
 extern struct angles leg4;
 
 void write_servos();
+int servodeadzone(int mils, int dead_center, int dead_width);
+int deg2micros(float degrees);
 
 #endif

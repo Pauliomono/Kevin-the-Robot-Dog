@@ -691,15 +691,15 @@ void offset()
 {
   // offsets
   x1.pos_f += 0;
-  yy1.pos_f += -1;
+  yy1.pos_f += 20;
   z1.pos_f += 0;
   x2.pos_f += 0;
-  yy2.pos_f += 1;
-  z2.pos_f += 0;
+  yy2.pos_f += -20;
+  z2.pos_f += 5;
   x3.pos_f += 0;
-  yy3.pos_f += -1;
+  yy3.pos_f += 20;
   z3.pos_f += 0;
-  x4.pos_f += 0;
-  yy4.pos_f += 1;
+  x4.pos_f += 5;
+  yy4.pos_f += -20;
   z4.pos_f += 0;
 }
