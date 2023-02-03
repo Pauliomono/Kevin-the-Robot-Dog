@@ -53,6 +53,8 @@ union data_type
   };
 struct comm
   {
+    uint16_t checksum1;
+    uint16_t checksum2;
     int time;
     String mnemonic;
     union data_type data;
@@ -60,11 +62,14 @@ struct comm
 
 extern int comm_receive_step;
 extern int time_stamp;
-extern String mnemonic;
+//extern uint16_t checksum1;
+//extern uint16_t checksum2;
+extern char mnemonic[7];
 extern union data_type comm_data;
-extern char double_buffer[8];
+//extern byte double_buffer[8];//8?
 extern struct comm comm_results;
 extern bool new_data;
+extern char data_byte;
 
 void comms_send();
 void comms_receive();

@@ -140,28 +140,28 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("ROLLVAL");
-    Serial4.print("D");
+    Serial4.print("d");
     Serial4.print(roll);
     Serial4.print("E");
     // PIT_VAL - IMU pitch value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIT_VAL");
-    Serial4.print("D");
+    Serial4.print("d");
     Serial4.print(pitch);
     Serial4.print("E");
     // STEPSTE - state in walking motion
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("STEPSTE");
-    Serial4.print("I");
+    Serial4.print("i");
     Serial4.print(state);
     Serial4.print("E");
     // H1A_TAR - leg 1 hip target angle
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("H1A_TAR");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(leg1.hip);
     Serial4.print("E");
     // S1A_TAR - leg 1 shoulder target angle
@@ -169,34 +169,34 @@ void comms_send()
     Serial4.print(millis());
     Serial4.print("S1A_TAR");
     Serial4.print(leg1.shoulder);
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print("E");
     // K1A_TAR - leg 1 knee target angle
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("K1A_TAR");
     Serial4.print(leg1.knee);
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print("E");
     // L1X_POS - leg 1 x position
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("L1X_POS");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(x1.pos);
     Serial4.print("E");
     // L1Y_POS - leg 1 Y position
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("L1Y_POS");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(yy1.pos);
     Serial4.print("E");
     // L1Z_POS - leg 1 Z position
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("L1Z_POS");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(z1.pos);
     Serial4.print("E");
   }
@@ -208,14 +208,14 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("FWDMOVE");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(x_dist);
     Serial4.print("E");
     // SIDMOVE - move sideways value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("SIDMOVE");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(steer2); // placeholder
     Serial4.print("E");
   }
@@ -226,14 +226,14 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("YAWMOVE");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(steer2);
     Serial4.print("E");
     // YAW_VAL - IMU yaw value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("YAW_VAL");
-    Serial4.print("D");
+    Serial4.print("d");
     Serial4.print(yaw);
     Serial4.print("E");
   }
@@ -244,21 +244,21 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("ACCEL_X");
-    Serial4.print("D");
+    Serial4.print("d");
     Serial4.print(x_accel);
     Serial4.print("E");
     // ACCEL_Y - y acceleration
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("ACCEL_Y");
-    Serial4.print("D");
+    Serial4.print("d");
     Serial4.print(y_accel);
     Serial4.print("E");
     // ACCEL_Z - z acceleration
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("ACCEL_Z");
-    Serial4.print("D");
+    Serial4.print("d");
     Serial4.print(z_accel);
     Serial4.print("E");
   }
@@ -270,21 +270,21 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIDVLRP");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(kpr);
     Serial4.print("E");
     // PIDVLRI - PID roll integral value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIDVLRI");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(kir);
     Serial4.print("E");
     // PIDVLRD - PID roll derivative value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIDVLRD");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(kdr);
     Serial4.print("E");
   }
@@ -295,21 +295,21 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIDVLPP");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(kpp);
     Serial4.print("E");
     // PIDVLPI - PID pitch integral value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIDVLPI");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(kip);
     Serial4.print("E");
     // PIDVLPD - PID pitch derivative value
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("PIDVLPD");
-    Serial4.print("F");
+    Serial4.print("f");
     Serial4.print(kdp);
     Serial4.print("E");
   }
@@ -320,21 +320,21 @@ void comms_send()
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("MODEVAL");
-    Serial4.print("I");
+    Serial4.print("i");
     Serial4.print(mode);
     Serial4.print("E");
     // BALMODE - type of balance being used
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("BALMODE");
-    Serial4.print("I");
+    Serial4.print("i");
     Serial4.print(mode); // placeholder
     Serial4.print("E");
     // KEVTIME - time onboard Kevin (milliseconds)
     Serial4.print("T");
     Serial4.print(millis());
     Serial4.print("KEVTIME");
-    Serial4.print("I");
+    Serial4.print("i");
     Serial4.print(millis());
     Serial4.print("E");
   }
@@ -363,132 +363,289 @@ void comms_receive()
 
 
   */
-
-  // 1. if 1 byte available, parse it
+  // Serial.println(comm_receive_step);
+  // Serial.print(comm_receive_step);
+  //  1. if 1 byte available, parse it
   if (comm_receive_step == 1)
   {
-    if (Serial.available() > 0)
+    if (Serial4.available() > 0)
     {
+
       char start_byte;
       start_byte = Serial4.read();
-      if (start_byte == 'T')
+      if (start_byte == '<')
       {
+#ifdef SERIAL_MIRROR
+        Serial.print("\t");
+        Serial.print(start_byte);
+#endif
         comm_receive_step++;
       }
+      comm_results.checksum2 = 0;
     }
   }
-  // 2. capture time - record time (int)
+  // 2. checksum
   if (comm_receive_step == 2)
   {
-    if (Serial.available() >= 4)
+    if (Serial4.available() >= 2)
     {
-      time_stamp = Serial.parseInt();
+
+      byte checksum_buffer[2];
+      for (int i = 0; i < 2; i++)
+      {
+
+        checksum_buffer[i] = Serial4.read();
+      }
+      memcpy(&comm_results.checksum1, checksum_buffer, sizeof(comm_results.checksum1));
+#ifdef SERIAL_MIRROR_CHECKSUM
+      Serial.print(comm_results.checksum1);
+#endif
       comm_receive_step++;
     }
   }
-  // 3. capture mnemonic - capture 7 more characters
+
+  // 3. capture time - record time (int)
   if (comm_receive_step == 3)
   {
-    if (Serial.available() >= 7)
+    if (Serial4.available() >= 4)
+    {
+      byte time_buffer[4];
+      for (int i = 0; i < 4; i++)
+      {
+
+        time_buffer[i] = Serial4.read();
+        comm_results.checksum2 = comm_results.checksum2 + time_buffer[i];
+      } // 8?
+
+      memcpy(&time_stamp, time_buffer, sizeof(time_stamp));
+
+      // time_stamp = Serial4.parseInt();
+      comm_receive_step++;
+
+#ifdef SERIAL_MIRROR_TIME
+      Serial.print(time_stamp);
+#endif
+    }
+  }
+  // 4. capture mnemonic - capture 7 more characters
+  if (comm_receive_step == 4)
+  {
+    if (Serial4.available() >= 7)
     {
       for (int i = 0; i < 7; i++)
       {
-        mnemonic += Serial4.read();
+        mnemonic[i] = (byte)Serial4.read();
+        comm_results.checksum2 = comm_results.checksum2 + mnemonic[i];
       }
+#ifdef SERIAL_MIRROR_MNEMONIC
+      Serial.print(mnemonic);
+#endif
       comm_receive_step++;
     }
   }
 
-  // 4. capture datatype - bool, int, float, double
+  // 5. capture datatype - bool, int, float, double
 
-  if (comm_receive_step == 4)
+  if (comm_receive_step == 5)
   {
-    if (Serial.available() >= 1)
+    if (Serial4.available() >= 1)
     {
-      char data_byte;
+
       data_byte = Serial4.read();
-      if (data_byte == 'B')
-      {
-        comm_receive_step = 5;
-      }
-      if (data_byte == 'I')
+      comm_results.checksum2 = comm_results.checksum2 + data_byte;
+
+#ifdef SERIAL_MIRROR_TYPE
+      Serial.print(data_byte);
+#endif
+
+      if (data_byte == 'b')
       {
         comm_receive_step = 6;
       }
-      if (data_byte == 'F')
+      if (data_byte == 'i')
       {
         comm_receive_step = 7;
       }
-      if (data_byte == 'D')
+      if (data_byte == 'f')
       {
         comm_receive_step = 8;
+      }
+      if (data_byte == 'd')
+      {
+        comm_receive_step = 9;
       }
     }
   }
 
   // 5-8. capture value - record characters until character is "E"
   // bool
-  if (comm_receive_step == 5)
+  if (comm_receive_step == 6)
   {
-    if (Serial.available() >= 2)
+    if (Serial4.available() >= 8)
     {
-      comm_data.b = (Serial4.read() << 8) + Serial4.read();
+
+      byte bool_buffer[2];
+      for (int i = 0; i < 2; i++)
+      {
+        bool_buffer[i] = Serial4.read();
+        comm_results.checksum2 = comm_results.checksum2 + bool_buffer[i];
+      }
+
+      for (int i = 0; i < 6; i++)
+      {
+        comm_results.checksum2 = comm_results.checksum2 + Serial4.read();
+      }
+      memcpy(&comm_data.b, bool_buffer, sizeof(comm_data.b));
+
       comm_results.time = time_stamp;
       comm_results.mnemonic = mnemonic;
       comm_results.data.b = comm_data.b;
-      comm_receive_step = 9;
+      comm_receive_step = 10;
+#ifdef SERIAL_MIRROR_DATA
+      Serial.print(comm_data.b);
+#endif
     }
   }
   // int
-  if (comm_receive_step == 6)
+  if (comm_receive_step == 7)
   {
-    if (Serial.available() >= 4)
+    if (Serial4.available() >= 8)
     {
-      comm_data.i = Serial.parseInt();
+
+      byte int_buffer[4];
+      for (int i = 0; i < 4; i++)
+      {
+
+        int_buffer[i] = Serial4.read();
+        comm_results.checksum2 = comm_results.checksum2 + int_buffer[i];
+
+      } // 8?
+
+      for (int i = 0; i < 4; i++)
+      {
+        comm_results.checksum2 = comm_results.checksum2 + Serial4.read();
+      }
+
+      memcpy(&comm_data.i, int_buffer, sizeof(comm_data.i));
+      // comm_data.i = Serial4.parseInt();
       comm_results.time = time_stamp;
       comm_results.mnemonic = mnemonic;
       comm_results.data.i = comm_data.i;
-      comm_receive_step = 9;
+      comm_receive_step = 10;
+#ifdef SERIAL_MIRROR_DATA
+      Serial.print(comm_data.i);
+#endif
     }
   }
   // float
-  if (comm_receive_step == 7)
+  if (comm_receive_step == 8)
   {
-    if (Serial.available() >= 4)
+    if (Serial4.available() >= 8)
     {
-      comm_data.f = Serial.parseFloat();
+      byte float_buffer[4];
+      for (int i = 0; i < 4; i++)
+      {
+
+        float_buffer[i] = Serial4.read();
+        comm_results.checksum2 = comm_results.checksum2 + float_buffer[i];
+      } // 8?
+
+      for (int i = 0; i < 4; i++)
+      {
+        comm_results.checksum2 = comm_results.checksum2 + Serial4.read();
+      }
+
+      memcpy(&comm_data.f, float_buffer, sizeof(comm_data.f));
+
+      // comm_data.f = Serial4.parseFloat();
       comm_results.time = time_stamp;
       comm_results.mnemonic = mnemonic;
       comm_results.data.f = comm_data.f;
-      comm_receive_step = 9;
+      comm_receive_step = 10;
+#ifdef SERIAL_MIRROR_DATA
+      Serial.print(comm_data.f);
+#endif
     }
   }
   // double
-  if (comm_receive_step == 7)
+  if (comm_receive_step == 9)
   {
-    if (Serial.available() >= 8)
+
+    if (Serial4.available() >= 8) // 8?
     {
-      Serial4.readBytes(double_buffer, 8);
+
+      byte double_buffer[8];
+      for (int i = 0; i < 8; i++)
+      {
+
+        double_buffer[i] = Serial4.read();
+        comm_results.checksum2 = comm_results.checksum2 + double_buffer[i];
+      } // 8?
+
       memcpy(&comm_data.d, double_buffer, sizeof(comm_data.d));
 
       comm_results.time = time_stamp;
       comm_results.mnemonic = mnemonic;
       comm_results.data.d = comm_data.d;
-      comm_receive_step = 9;
+      comm_receive_step = 10;
+#ifdef SERIAL_MIRROR_DATA
+      Serial.print(comm_data.d);
+#endif
     }
   }
   // 9. return results
-  if (comm_receive_step == 9)
+  if (comm_receive_step == 10)
   {
-    if (Serial.available() >= 1)
+    if (Serial4.available() >= 1)
     {
       char end_byte = Serial4.read(); // check if E?
       comm_receive_step = 1;
-      new_data = 1;
+
+      // Serial.print("fin");
+      // Serial.print("\t");
+      if ((int)comm_results.checksum1 == (int)comm_results.checksum2)
+      {
+        // Serial.print("flag");
+        // Serial.print("\t");
+        new_data = 1;
+      }
+      else
+      {
+        new_data = 0;
+#ifdef CHECKSUM_FAIL
+        Serial.println("bad data");
+#endif
+      }
+
+#ifdef SERIAL_MIRROR_VALID
+      Serial.print(comm_results.time);
+      Serial.print(comm_results.mnemonic);
+      Serial.print(data_byte);
+      Serial.print("\t");
+      Serial.print("\t");
+      Serial.print("\t");
+
+      Serial.print(comm_results.data.f);
+      Serial.print("\t");
+      Serial.print(comm_data.f);
+      Serial.print("\t");
+      Serial.print(comm_results.data.d);
+      Serial.print("\t");
+      Serial.println(comm_data.d);
+
+#endif
+#ifdef SERIAL_MIRROR
+      Serial.print(end_byte);
+      Serial.print("\t");
+      Serial.print(comm_results.checksum1);
+      Serial.print("\t");
+      Serial.println(comm_results.checksum2);
+
+#endif
+      comm_results.checksum2 = 0;
     }
   }
 }
-
 /*
 comms interpreter
 - updates variables based on mnemonics received
@@ -499,69 +656,69 @@ comms interpreter
 
 void comms_interpreter()
 {
-  if (new_data > 0)
+  if (new_data == 1)
   {
 #ifdef COMM_ROLE_VEHICLE
-    if (comm_results.mnemonic == 'FWDMOVE')
+    if (comm_results.mnemonic == "FWDMOVE")
     {
       x_dist = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'SIDMOVE')
+    if (comm_results.mnemonic == "SIDMOVE")
     {
       steer2 = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'YAWMOVE')
+    if (comm_results.mnemonic == "YAWMOVE")
     {
       steer2 = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'MODEVAL')
+    if (comm_results.mnemonic == "MODEVAL")
     {
       mode = comm_results.data.i;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLRP')
+    if (comm_results.mnemonic == "PIDVLRP")
     {
       kpr = comm_results.data.f;
       rollPID.SetTunings(kpr, kir, kdr);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLRI')
+    if (comm_results.mnemonic == "PIDVLRI")
     {
       kir = comm_results.data.f;
       rollPID.SetTunings(kpr, kir, kdr);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLRD')
+    if (comm_results.mnemonic == "PIDVLRD")
     {
       kdr = comm_results.data.f;
       rollPID.SetTunings(kpr, kir, kdr);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLPP')
+    if (comm_results.mnemonic == "PIDVLPP")
     {
       kpp = comm_results.data.f;
       pitchPID.SetTunings(kpp, kip, kdp);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLPI')
+    if (comm_results.mnemonic == "PIDVLPI")
     {
       kip = comm_results.data.f;
       pitchPID.SetTunings(kpp, kip, kdp);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLPD')
+    if (comm_results.mnemonic == "PIDVLPD")
     {
       kdp = comm_results.data.f;
       pitchPID.SetTunings(kpp, kip, kdp);
@@ -571,131 +728,145 @@ void comms_interpreter()
 #endif
 
 #ifdef COMM_ROLE_CONTROLLER
+
     if (comm_results.mnemonic == "ROLLVAL")
     {
+
       roll = comm_results.data.d;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIT_VAL')
+    else if (comm_results.mnemonic == "PIT_VAL")
     {
       pitch = comm_results.data.d;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'YAW_VAL')
+    else if (comm_results.mnemonic == "YAW_VAL")
     {
       yaw = comm_results.data.d;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'ACCEL_X')
+    else if (comm_results.mnemonic == "ACCEL_X")
     {
       x_accel = comm_results.data.d;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'ACCEL_Y')
+    else if (comm_results.mnemonic == "ACCEL_Y")
     {
       y_accel = comm_results.data.d;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'ACCEL_Z')
+    else if (comm_results.mnemonic == "ACCEL_Z")
     {
       z_accel = comm_results.data.d;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'STEPSTE')
+    else if (comm_results.mnemonic == "STEPSTE")
     {
       state = comm_results.data.i;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'H1A_TAR')
+    else if (comm_results.mnemonic == "H1A_TAR")
     {
       leg1.hip = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'S1A_TAR')
+    else if (comm_results.mnemonic == "S1A_TAR")
     {
       leg1.shoulder = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'K1A_TAR')
+    else if (comm_results.mnemonic == "K1A_TAR")
     {
       leg1.knee = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'L1X_POS')
+    else if (comm_results.mnemonic == "L1X_POS")
     {
       x1.pos = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'L1Y_POS')
+    else if (comm_results.mnemonic == "L1Y_POS")
     {
       yy1.pos = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'L1Z_POS')
+    else if (comm_results.mnemonic == "L1Z_POS")
     {
       z1.pos = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLRP')
+    else if (comm_results.mnemonic == "PIDVLRP")
     {
       kpr = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLRI')
+    else if (comm_results.mnemonic == "PIDVLRI")
     {
       kir = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLRD')
+    else if (comm_results.mnemonic == "PIDVLRD")
     {
       kdr = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLPP')
+    else if (comm_results.mnemonic == "PIDVLPP")
     {
       kpp = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLPI')
+    else if (comm_results.mnemonic == "PIDVLPI")
     {
       kip = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'PIDVLPD')
+    else if (comm_results.mnemonic == "PIDVLPD")
     {
       kdp = comm_results.data.f;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'BALMODE')
+    else if (comm_results.mnemonic == "BALMODE")
     {
       // bal_mode = comm_results.data.i;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == 'KEVTIME')
+    else if (comm_results.mnemonic == "KEVTIME")
     {
       // time = comm_results.data.i;
       new_data = 0;
     }
+    else
+    {
+      new_data = 0;
+      return;
+    }
+#ifdef COMM_SHOW_INTERPRETER
+    Serial.print(comm_results.time);
+    Serial.print("\t");
+    Serial.print(comm_results.mnemonic);
+    Serial.print("\t");
+    Serial.println(comm_results.data.d);
+#endif
 #endif
   }
 }

@@ -63,13 +63,15 @@ float kdp;
 float kpr;
 float kir;
 float kdr;
-int comm_receive_step;
+int comm_receive_step = 1;
 int time_stamp;
-String mnemonic;
+uint16_t checksum;
+char mnemonic[7];
 union data_type comm_data;
-char double_buffer[8];
+byte double_buffer[8];//8?
 struct comm comm_results;
 bool new_data;
+char data_byte;
 
 const int rs = 2, en = 3;
 LiquidCrystal lcd(rs, en, 4, 5, 6, 7);
@@ -120,7 +122,7 @@ void setup()
   lcd.setCursor(0, 1);
   lcd.print("Second line");
 
-  Serial.begin(9600);
+  Serial.begin(115200);
   delay(3000);
   Serial4.begin(115200);
   lcd.clear();
@@ -213,7 +215,7 @@ void loop()
 #endif
 
 #ifdef COMM_MODE_DESCRIPTIVE
-  comms_send();
+  //comms_send();
   comms_receive();
   comms_interpreter();
 #endif

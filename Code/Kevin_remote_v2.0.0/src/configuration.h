@@ -21,4 +21,21 @@ DESCRIPTIVE - telemetry includes time, Mnemonic, data format & data - most struc
 //#define COMM_ROLE_VEHICLE
 #define COMM_ROLE_CONTROLLER
 
+
+//COMM mirror - enables mirroring serial communications to USB
+
+/*
+#define SERIAL_MIRROR
+#define SERIAL_MIRROR_TIME
+#define SERIAL_MIRROR_MNEMONIC
+#define SERIAL_MIRROR_CHECKSUM
+#define SERIAL_MIRROR_TYPE
+#define SERIAL_MIRROR_DATA
+*/
+
+//#define SERIAL_MIRROR_VALID
+#define COMM_SHOW_INTERPRETER
+
+#define CHECKSUM_FAIL
+
 #endif
