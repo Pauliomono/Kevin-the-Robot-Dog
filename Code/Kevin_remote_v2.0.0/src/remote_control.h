@@ -70,7 +70,10 @@ extern union data_type comm_data;
 extern struct comm comm_results;
 extern bool new_data;
 extern char data_byte;
+extern char telem_packet[24];
 
+template <class TYPE>
+void packet_builder(char mnemon[7], char type, TYPE data_value);
 void comms_send();
 void comms_receive();
 void comms_interpreter();

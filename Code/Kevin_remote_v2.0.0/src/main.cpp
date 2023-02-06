@@ -63,15 +63,18 @@ float kdp;
 float kpr;
 float kir;
 float kdr;
+
+// comms globals
 int comm_receive_step = 1;
 int time_stamp;
 uint16_t checksum;
 char mnemonic[7];
-union data_type comm_data;
-byte double_buffer[8];//8?
-struct comm comm_results;
+data_type comm_data;
+char double_buffer[8];
+comm comm_results;
 bool new_data;
 char data_byte;
+char telem_packet[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 const int rs = 2, en = 3;
 LiquidCrystal lcd(rs, en, 4, 5, 6, 7);

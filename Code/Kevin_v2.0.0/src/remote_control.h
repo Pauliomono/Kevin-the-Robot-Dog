@@ -7,7 +7,7 @@
 #include <servos.h>
 #include <kinematics.h>
 
-extern float t;
+extern int t;
 extern int input;
 extern bool data_recieved;
 extern String datapacket;
@@ -47,6 +47,8 @@ union data_type
   };
 struct comm
   {
+    uint16_t checksum1;
+    uint16_t checksum2;
     int time;
     String mnemonic;
     union data_type data;
@@ -54,19 +56,15 @@ struct comm
 
 extern int comm_receive_step;
 extern int time_stamp;
-extern String mnemonic;
+extern char mnemonic[7];
 extern union data_type comm_data;
-extern char double_buffer[8];
 extern struct comm comm_results;
 extern bool new_data;
+extern char data_byte;
+extern char telem_packet[24];
 
-void remoteIO();
-void get_input();
-void send_telemetry(float X, float Y);
-void assemble_input();
-String dec2str(float X);
-String num2str(int X);
-String bool2str(bool X);
+template <class TYPE>
+void packet_builder(char mnemon[7], char type, TYPE data_value);
 void comms_send();
 void comms_receive();
 void comms_interpreter();
