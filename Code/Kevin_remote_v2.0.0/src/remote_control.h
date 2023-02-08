@@ -57,6 +57,7 @@ struct comm
     uint16_t checksum2;
     int time;
     String mnemonic;
+    char type;
     union data_type data;
   };
 

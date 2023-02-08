@@ -491,6 +491,7 @@ void comms_receive()
     {
 
       data_byte = Serial4.read();
+      comm_results.type = data_byte;
       comm_results.checksum2 = comm_results.checksum2 + data_byte;
 
 #ifdef SERIAL_MIRROR_TYPE
@@ -885,13 +886,26 @@ void comms_interpreter()
     {
       new_data = 0;
       return;
+
     }
 #ifdef COMM_SHOW_INTERPRETER
     Serial.print(comm_results.time);
     Serial.print("\t");
     Serial.print(comm_results.mnemonic);
     Serial.print("\t");
-    Serial.println(comm_results.data.d);
+    if(comm_results.type == 'd'){
+Serial.println(comm_results.data.d);
+    }
+    else if(comm_results.type == 'f'){
+Serial.println(comm_results.data.f);
+    }
+    else if(comm_results.type == 'i'){
+Serial.println(comm_results.data.i);
+    }
+    else if (comm_results.type == 'b'){
+Serial.println(comm_results.data.b);
+    }
+    
 #endif
 #endif
   }
