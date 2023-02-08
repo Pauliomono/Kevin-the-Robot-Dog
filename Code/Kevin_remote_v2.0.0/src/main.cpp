@@ -122,7 +122,7 @@ void setup()
   button2.setPressedState(LOW);
   button3.setPressedState(LOW);
   button4.setPressedState(LOW);
-  //button1.interval(10);
+  button1.interval(10);
 
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
@@ -151,17 +151,17 @@ void loop()
   Y = analogRead(A1);
 
   x_dist_commanded = map(X, 0, 1024, 99, -99);
-  if ((X > -8) && (X < 5))
+  if ((x_dist_commanded > -8) && (x_dist_commanded < 5))
   {
     x_dist_commanded = 0;
   }
   steer2_commanded = map(Y, 0, 1024, 99, -99);
-  if ((Y > -5) && (Y < 5))
+  if ((steer2_commanded > -5) && (steer2_commanded < 5))
   {
     steer2_commanded = 0;
   }
 
-  if ((t % 10 == 0)&&(t_button != t))
+  if ((t_button != t))
   {
     button1.update();
     button2.update();
@@ -172,7 +172,7 @@ void loop()
 
   if (button1.pressed())
   {
-    mode_commanded++;
+    mode_commanded = mode_commanded + 1;
     if (mode_commanded > 3){
       mode_commanded = 0;
     }
@@ -266,6 +266,9 @@ void loop()
     lcd.print("MODE");
     lcd.print(mode);
 
+    lcd.setCursor(15, 1);
+lcd.print(mode_commanded);
+
     // display translation values received back from kevin for modes 0 and 1
     if (mode == 0 || mode == 1)
     {
@@ -325,7 +328,7 @@ void loop()
       }
     }
 
-    if (b1)
+    if (button1.isPressed())
     {
       lcd.setCursor(13, 1);
       lcd.write(byte(0));
