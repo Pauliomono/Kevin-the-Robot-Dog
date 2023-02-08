@@ -70,7 +70,20 @@ extern union data_type comm_data;
 extern struct comm comm_results;
 extern bool new_data;
 extern char data_byte;
+extern char telem_packet[24];
 
+extern float x_dist_commanded;
+extern float steer2_commanded;
+extern float kpp_commanded;
+extern float kip_commanded;
+extern float kdp_commanded;
+extern float kpr_commanded;
+extern float kir_commanded;
+extern float kdr_commanded;
+extern int mode_commanded;
+
+template <class TYPE>
+void packet_builder(char mnemon[7], char type, TYPE data_value);
 void comms_send();
 void comms_receive();
 void comms_interpreter();

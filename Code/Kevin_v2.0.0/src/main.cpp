@@ -31,7 +31,7 @@ int n_debug_points = 3;
 // code control vars
 int state_time = 100;
 int interpolation_interval;
-int n_interps = 20;
+int n_interps = 5;
 int state = 1;
 int mode = 0;
 int n_states = 6;
@@ -39,9 +39,12 @@ int n_states = 6;
 // timing vars
 float t0 = 0;
 float tf = 1000;
-float t = 0;
+int t;
 int t_old;
 int t_old_state;
+int comm_timer;
+int imu_timer;
+int bal_timer;
 
 // SoftwareSerial Remote (21, 20);
 String datapacket;
@@ -213,18 +216,24 @@ int phase_time;
 // comms globals
 int comm_receive_step = 1;
 int time_stamp;
-String mnemonic;
+uint16_t checksum;
+char mnemonic[7];
 data_type comm_data;
 char double_buffer[8];
 comm comm_results;
 bool new_data;
+char data_byte;
+char telem_packet[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+uint8_t serial_buffer[SERIAL_BUFFER_SIZE];
 
 void setup() // setup and initialization code
 {
       // initialize serial bus
-      Serial.begin(9600);
+      Serial.begin(115200);
       delay(2000);
       Serial4.begin(115200);
+      Serial4.addMemoryForWrite(serial_buffer, SERIAL_BUFFER_SIZE);
       Serial.println("Kevin v2.0.0");
       Serial.println("-----------------------------------------------------------------");
       Serial.println("Begin Kevin startup:");
@@ -486,7 +495,13 @@ void loop()
 #endif
 
 #ifdef COMM_MODE_DESCRIPTIVE
-      comms_send();
+
+      if (comm_timer != t)
+      {
+            comm_timer = t;
+            comms_send();
+      }
+
       comms_receive();
       comms_interpreter();
 #endif
@@ -497,14 +512,18 @@ void loop()
 
 // get IMU data (to add)
 #ifdef IMU_ENABLE
-      get_IMU_data();
-      yaw = ypr[0] * 180 / M_PI;
-      pitch = ypr[2] * 180 / M_PI;
-      roll = ypr[1] * 180 / M_PI;
 
-      x_accel = aaWorld.x;
-      y_accel = aaWorld.y;
-      z_accel = aaWorld.z;
+      if (imu_timer != t)
+      {
+            get_IMU_data();
+            yaw = ypr[0] * 180 / M_PI;
+            pitch = ypr[2] * 180 / M_PI;
+            roll = (double)ypr[1] * 180 / M_PI;
+            x_accel = aaWorld.x;
+            y_accel = aaWorld.y;
+            z_accel = aaWorld.z;
+            imu_timer = t;
+      }
 
 #endif
 
@@ -578,11 +597,12 @@ void loop()
                   balance();
 #endif
             }
-            else if (remainder((state_time / 4), (t - t_old_state)) == 0)
+            else if (((state_time / 4) % (t - t_old_state) == 0) && (bal_timer != t))
             {
 #ifdef PID_BALANCE_ENABLE
-                  balance();
+                  balance();         
 #endif
+bal_timer = t;
             }
 #ifdef DEBUG_TIMER
             debug_timer(); // 4
@@ -637,11 +657,12 @@ void loop()
                   balance();
 #endif
             }
-            else if (remainder((state_time / 4), (t - t_old_state)) == 0)
+            else if (((state_time / 4) % (t - t_old_state) == 0) && (bal_timer != t))
             {
 #ifdef PID_BALANCE_ENABLE
-                  balance();
+                  balance();        
 #endif
+bal_timer = t;
             }
 
             // interpolation timing
@@ -682,11 +703,12 @@ void loop()
                   balance();
 #endif
             }
-            else if (remainder((state_time / 4), (t - t_old_state)) == 0)
+            else if (((state_time / 4) % (t - t_old_state) == 0) && (bal_timer != t))
             {
 #ifdef PID_BALANCE_ENABLE
                   balance();
 #endif
+                  bal_timer = t;
             }
 
             // walking states - breaks step motion into 6 points (states)

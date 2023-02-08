@@ -7,8 +7,9 @@
 #include <remote_control.h>
 
 int t = 0;
-int mode = 0;
-String datapacket;
+int t_button;
+int t_lcd;
+
 int xxx;
 int yyy;
 int packet;
@@ -63,15 +64,29 @@ float kdp;
 float kpr;
 float kir;
 float kdr;
+int mode;
+
+float x_dist_commanded;
+float steer2_commanded;
+float kpp_commanded;
+float kip_commanded;
+float kdp_commanded;
+float kpr_commanded;
+float kir_commanded;
+float kdr_commanded;
+int mode_commanded = 0;
+
+// comms globals
 int comm_receive_step = 1;
 int time_stamp;
 uint16_t checksum;
 char mnemonic[7];
-union data_type comm_data;
-byte double_buffer[8];//8?
-struct comm comm_results;
+data_type comm_data;
+char double_buffer[8];
+comm comm_results;
 bool new_data;
 char data_byte;
+char telem_packet[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 const int rs = 2, en = 3;
 LiquidCrystal lcd(rs, en, 4, 5, 6, 7);
@@ -107,7 +122,7 @@ void setup()
   button2.setPressedState(LOW);
   button3.setPressedState(LOW);
   button4.setPressedState(LOW);
-  button1.interval(10);
+  //button1.interval(10);
 
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
@@ -135,39 +150,36 @@ void loop()
   X = analogRead(A0);
   Y = analogRead(A1);
 
-  X = map(X, 0, 1024, 99, -99);
+  x_dist_commanded = map(X, 0, 1024, 99, -99);
   if ((X > -8) && (X < 5))
   {
-    X = 0;
+    x_dist_commanded = 0;
   }
-  Y = map(Y, 0, 1024, 99, -99);
+  steer2_commanded = map(Y, 0, 1024, 99, -99);
   if ((Y > -5) && (Y < 5))
   {
-    Y = 0;
+    steer2_commanded = 0;
   }
 
-  if (t % 10 == 0)
+  if ((t % 10 == 0)&&(t_button != t))
   {
     button1.update();
     button2.update();
     button3.update();
     button4.update();
+    t_button = t;
   }
 
-  if (button1.isPressed() && !b1_send)
+  if (button1.pressed())
   {
-    b1 = 1;
+    mode_commanded++;
+    if (mode_commanded > 3){
+      mode_commanded = 0;
+    }
   }
-  if (b1_send)
-  {
-    b1 = 0;
-  }
-  if (!button1.isPressed())
-  {
-    b1_send = 0;
-  }
-
-  if (button2.isPressed() && !b2_send)
+  
+  /*
+    if (button2.isPressed() && !b2_send)
   {
     b2 = 1;
   }
@@ -205,17 +217,10 @@ void loop()
   {
     b4_send = 0;
   }
-
-#ifdef COMM_MODE_STRING
-  remoteIO();
-#endif
-
-#ifdef COMM_MODE_INT
-  remoteIO();
-#endif
+  */
 
 #ifdef COMM_MODE_DESCRIPTIVE
-  //comms_send();
+  comms_send();
   comms_receive();
   comms_interpreter();
 #endif
@@ -235,32 +240,33 @@ void loop()
   //Serial.print(",");
   Serial.write((byte)button4.isPressed());
   */
-  if (t % 50 == 0)
+  if ((t % 50 == 0)&&(t_lcd !=t))
   {
+    t_lcd = t;
     lcd.clear();
 
     // display joystick input
     lcd.setCursor(0, 0);
     lcd.print("X");
-    if (X >= 0)
+    if (x_dist_commanded >= 0)
     {
       lcd.setCursor(2, 0);
     }
-    lcd.print(X);
+    lcd.print(x_dist_commanded);
     lcd.setCursor(5, 0);
     lcd.print("Y");
-    if (Y >= 0)
+    if (steer2_commanded >= 0)
     {
       lcd.setCursor(7, 0);
     }
-    lcd.print(Y);
+    lcd.print(steer2_commanded);
 
     // display mode
     lcd.setCursor(11, 0);
     lcd.print("MODE");
     lcd.print(mode);
 
-    // display translation values recieved back from kevin for modes 0 and 1
+    // display translation values received back from kevin for modes 0 and 1
     if (mode == 0 || mode == 1)
     {
       lcd.setCursor(0, 1);
