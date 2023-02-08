@@ -272,19 +272,19 @@ void comms_send()
   if ((comm_time % 250) == 24)
   {
     // FWDMOVE - move forward value
-    packet_builder("FWDMOVE", 'f', x_dist);
+    packet_builder("FWDMOVE", 'f', x_dist_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 250) == 32)
   {
     // SIDMOVE - move sideways value
-    packet_builder("SIDMOVE", 'f', steer2);
+    packet_builder("SIDMOVE", 'f', steer2_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 250) == 74)
   {
     // YAWMOVE - rotate in place value
-    packet_builder("YAWMOVE", 'f', steer2);
+    packet_builder("YAWMOVE", 'f', steer2_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 250) == 82)
@@ -332,49 +332,49 @@ void comms_send()
   if ((comm_time % 1000) == 224)
   {
     // PIDVLRP - PID roll proportional value
-    packet_builder("PIDVLRP", 'f', kpr);
+    packet_builder("PIDVLRP", 'f', kpr_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 232)
   {
     // PIDVLRI - PID roll integral value
-    packet_builder("PIDVLRI", 'f', kir);
+    packet_builder("PIDVLRI", 'f', kir_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 474)
   {
     // PIDVLRD - PID roll derivative value
-    packet_builder("PIDVLRD", 'f', kdr);
+    packet_builder("PIDVLRD", 'f', kdr_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 482)
   {
     // PIDVLPP - PID pitch proportional value
-    packet_builder("PIDVLPP", 'f', kpp);
+    packet_builder("PIDVLPP", 'f', kpp_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 724)
   {
     // PIDVLPI - PID pitch integral value
-    packet_builder("PIDVLPI", 'f', kip);
+    packet_builder("PIDVLPI", 'f', kip_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 732)
   {
     // PIDVLPD - PID pitch derivative value
-    packet_builder("PIDVLPD", 'f', kdp);
+    packet_builder("PIDVLPD", 'f', kdp_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 974)
   {
     // MODEVAL - mode that Kevin is in
-    packet_builder("MODEVAL", 'i', mode);
+    packet_builder("MODEVAL", 'i', mode_commanded);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 982)
   {
     // BALMODE - type of balance being used
-    packet_builder("BALMODE", 'i', mode); // placeholder
+    packet_builder("BALMODE", 'i', mode_commanded); // placeholder
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 1000) == 990)
