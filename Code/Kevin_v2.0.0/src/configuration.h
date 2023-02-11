@@ -51,14 +51,14 @@ DESCRIPTIVE - telemetry includes time, Mnemonic, data format & data - most struc
 
 //COMM interpreter results
 #define COMM_SHOW_INTERPRETER
-#define CHECKSUM_FAIL
+//#define CHECKSUM_FAIL
 
 
 //determine high rate telemetry types - only 1 20hz data type atm
 
-#define SEND_ANGLES
+//#define SEND_ANGLES
 //#define SEND_COORDS
-//#define SEND_RPY
+#define SEND_RPY
 
 /*--------------------------------------------------------------------------
 Select walking gait types: 6 state, 8 state

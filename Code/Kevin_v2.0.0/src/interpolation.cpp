@@ -17,8 +17,7 @@ float interpolate2(float thetaf, float theta, int t0, int tf, int t)
   return (theta);
 }
 
-// cubic spline interpolation function - not currently working
-
+// cubic spline interpolation function - way better
 float interpolate1(float x_f, float x_c, float xdot_f, float xddot_f, float t0, float tf, float t)
 {
   float x;

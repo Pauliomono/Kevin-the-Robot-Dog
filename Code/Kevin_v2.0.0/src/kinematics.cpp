@@ -324,22 +324,80 @@ void get_xyz()
   -----------------------------------------------------------------*/
   if (N_STATES == 8)
   {
+    shoulders = attitude_model(roll_commanded, pitch_commanded, yaw_commanded);
+    x1.pos_f = shoulders.r1.x;
+    yy1.pos_f = shoulders.r1.y;
+    z1.pos_f = shoulders.r1.z;
+    x2.pos_f = shoulders.r2.x;
+    yy2.pos_f = shoulders.r2.y;
+    z2.pos_f = shoulders.r2.z;
+    x3.pos_f = shoulders.r3.x;
+    yy3.pos_f = shoulders.r3.y;
+    z3.pos_f = shoulders.r3.z;
+    x4.pos_f = shoulders.r4.x;
+    yy4.pos_f = shoulders.r4.y;
+    z4.pos_f = shoulders.r4.z;
+    offset();
+
+    //static mode
+    if (state == 0){
+      x1.pos_f += x_dist;
+      yy1.pos_f += steer2;
+      z1.pos_f += 0;
+      x2.pos_f -= x_dist;
+      yy2.pos_f -= steer2;
+      z2.pos_f = 0;
+      x3.pos_f -= x_dist;
+      yy3.pos_f += steer2;
+      z3.pos_f += 0;
+      x4.pos_f += x_dist;
+      yy4.pos_f -= steer2;
+      z4.pos_f += 0;
+
+      // velocities
+      x1.vel_f = 0;
+      yy1.vel_f = 0;
+      z1.vel_f = 0;
+      x2.vel_f = 0;
+      yy2.vel_f = 0;
+      z2.vel_f = 0;
+      x3.vel_f = x1.vel_f;
+      yy3.vel_f = -yy1.vel_f;
+      z3.vel_f = z1.vel_f;
+      x4.vel_f = x2.vel_f;
+      yy4.vel_f = yy2.vel_f;
+      z4.vel_f = z2.vel_f;
+
+      // accelerations
+      x1.accel_f = 0;
+      yy1.accel_f = 0;
+      z1.accel_f = 0;
+      x2.accel_f = 0;
+      yy2.accel_f = 0;
+      z2.accel_f = 0;
+      x3.accel_f = x1.accel_f;
+      yy3.accel_f = -yy1.accel_f;
+      z3.accel_f = z1.accel_f;
+      x4.accel_f = x2.accel_f;
+      yy4.accel_f = yy2.accel_f;
+      z4.accel_f = z2.accel_f;
+    }
+    
     if (state == 1)
     {
       // positions
-      x1.pos_f = x_dist;
-      yy1.pos_f = steer2;
-      z1.pos_f = leg_height;
-      x2.pos_f = -x_dist;
-      yy2.pos_f = -steer2;
-      z2.pos_f = leg_height;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f += x_dist;
+      yy1.pos_f += steer2;
+      z1.pos_f += 0;
+      x2.pos_f -= x_dist;
+      yy2.pos_f -= steer2;
+      z2.pos_f = 0;
+      x3.pos_f -= x_dist;
+      yy3.pos_f += steer2;
+      z3.pos_f += 0;
+      x4.pos_f += x_dist;
+      yy4.pos_f -= steer2;
+      z4.pos_f += 0;
 
       // velocities
       x1.vel_f = -x_dist / 2 / state_time;
@@ -372,19 +430,18 @@ void get_xyz()
     if (state == 2)
     {
       // positions
-      x1.pos_f = x_dist / 2;
-      yy1.pos_f = steer2 / 2;
-      z1.pos_f = leg_height;
-      x2.pos_f = -x_dist / 2;
-      yy2.pos_f = -steer2 / 2;
-      z2.pos_f = leg_height - step_height / 2;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f += x_dist / 2;
+      yy1.pos_f += steer2 / 2;
+      z1.pos_f = 0;
+      x2.pos_f -= x_dist / 2;
+      yy2.pos_f -= steer2 / 2;
+      z2.pos_f -= step_height / 2;
+      x3.pos_f -= x_dist / 2;
+      yy3.pos_f += steer2 / 2;
+      z3.pos_f = 0;
+      x4.pos_f += x_dist / 2;
+      yy4.pos_f -= steer2 / 2;
+      z4.pos_f -= step_height / 2;
 
       // velocities
       x1.vel_f = -x_dist / 2 / state_time;
@@ -417,19 +474,18 @@ void get_xyz()
     if (state == 3)
     {
       // positions
-      x1.pos_f = 0;
-      yy1.pos_f = 0;
-      z1.pos_f = leg_height;
-      x2.pos_f = 0;
-      yy2.pos_f = 0;
-      z2.pos_f = leg_height - step_height;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f += 0;
+      yy1.pos_f += 0;
+      z1.pos_f += 0;
+      x2.pos_f += 0;
+      yy2.pos_f += 0;
+      z2.pos_f -= step_height;
+      x3.pos_f += 0;
+      yy3.pos_f += 0;
+      z3.pos_f += 0;
+      x4.pos_f += 0;
+      yy4.pos_f += 0;
+      z4.pos_f -= step_height;
 
       // velocities
       x1.vel_f = -x_dist / 2 / state_time;
@@ -462,18 +518,18 @@ void get_xyz()
     if (state == 4)
     {
       // positions
-      x1.pos_f = -x_dist / 2;
-      yy1.pos_f = -steer2 / 2;
-      z1.pos_f = leg_height;
-      x2.pos_f = x_dist * 4 / 3;
-      yy2.pos_f = steer2 * 4 / 3;
-      z2.pos_f = leg_height - step_height / 2;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
+      x1.pos_f -= x_dist / 2;
+      yy1.pos_f -= steer2 / 2;
+      z1.pos_f += 0;
+      x2.pos_f += x_dist * 4 / 3;
+      yy2.pos_f += steer2 * 4 / 3;
+      z2.pos_f -= step_height / 2;
+      x3.pos_f += x_dist / 2;
+      yy3.pos_f -= steer2 / 2;
+      z3.pos_f += 0;
+      x4.pos_f -= x_dist * 4 / 3;
+      yy4.pos_f += steer2 * 4 / 3;
+      z4.pos_f -= step_height / 2;
       offset();
 
       // velocities
@@ -507,19 +563,18 @@ void get_xyz()
     if (state == 5)
     {
       // positions
-      x1.pos_f = -x_dist;
-      yy1.pos_f = -steer2;
-      z1.pos_f = leg_height;
-      x2.pos_f = x_dist;
-      yy2.pos_f = steer2;
-      z2.pos_f = leg_height;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f -= x_dist;
+      yy1.pos_f -= steer2;
+      z1.pos_f += 0;
+      x2.pos_f += x_dist;
+      yy2.pos_f += steer2;
+      z2.pos_f += 0;
+      x3.pos_f += x_dist;
+      yy3.pos_f -= steer2;
+      z3.pos_f += 0;
+      x4.pos_f -= x_dist;
+      yy4.pos_f += steer2;
+      z4.pos_f += 0;
 
       // velocities
       x1.vel_f = -x_dist / 2 / state_time;
@@ -552,19 +607,18 @@ void get_xyz()
     if (state == 6)
     {
       // positions
-      x1.pos_f = -x_dist / 2;
-      yy1.pos_f = -steer2 / 2;
-      z1.pos_f = leg_height - step_height / 2;
-      x2.pos_f = x_dist / 2;
-      yy2.pos_f = steer2 / 2;
-      z2.pos_f = leg_height;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f -= x_dist / 2;
+      yy1.pos_f -= steer2 / 2;
+      z1.pos_f -= step_height / 2;
+      x2.pos_f += x_dist / 2;
+      yy2.pos_f += steer2 / 2;
+      z2.pos_f += 0;
+      x3.pos_f += x_dist / 2;
+      yy3.pos_f -= steer2 / 2;
+      z3.pos_f -= step_height / 2;
+      x4.pos_f -= x_dist / 2;
+      yy4.pos_f += steer2 / 2;
+      z4.pos_f += 0;
 
       // velocities
       x1.vel_f = x_dist / 2 / state_time;
@@ -597,19 +651,18 @@ void get_xyz()
     if (state == 7)
     {
       // positions
-      x1.pos_f = 0;
-      yy1.pos_f = 0;
-      z1.pos_f = leg_height - step_height;
-      x2.pos_f = 0;
-      yy2.pos_f = 0;
-      z2.pos_f = leg_height;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f += 0;
+      yy1.pos_f += 0;
+      z1.pos_f -= step_height;
+      x2.pos_f += 0;
+      yy2.pos_f += 0;
+      z2.pos_f += 0;
+      x3.pos_f -= 0;
+      yy3.pos_f += 0;
+      z3.pos_f -= step_height;
+      x4.pos_f -= 0;
+      yy4.pos_f += 0;
+      z4.pos_f += 0;
 
       // velocities
       x1.vel_f = x_dist / 2 / state_time;
@@ -642,19 +695,18 @@ void get_xyz()
     if (state == 8)
     {
       // positions
-      x1.pos_f = x_dist * 4 / 3;
-      yy1.pos_f = steer2 * 4 / 3;
-      z1.pos_f = leg_height - step_height / 2;
-      x2.pos_f = x_dist / 2;
-      yy2.pos_f = steer2 / 2;
-      z2.pos_f = leg_height;
-      x3.pos_f = -x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = -x2.pos_f;
-      yy4.pos_f = yy2.pos_f;
-      z4.pos_f = z2.pos_f;
-      offset();
+      x1.pos_f += x_dist * 4 / 3;
+      yy1.pos_f += steer2 * 4 / 3;
+      z1.pos_f -= step_height / 2;
+      x2.pos_f += x_dist / 2;
+      yy2.pos_f += steer2 / 2;
+      z2.pos_f += 0;
+      x3.pos_f -= x_dist * 4 / 3;
+      yy3.pos_f += steer2 * 4 / 3;
+      z3.pos_f -= step_height / 2;
+      x4.pos_f -= x_dist / 2;
+      yy4.pos_f += steer2 / 2;
+      z4.pos_f += 0;
 
       // velocities
       x1.vel_f = x_dist / 4 / state_time;
@@ -691,15 +743,43 @@ void offset()
 {
   // offsets
   x1.pos_f += 0;
-  yy1.pos_f += 20;
+  yy1.pos_f += 30;
   z1.pos_f += 0;
   x2.pos_f += 0;
-  yy2.pos_f += -20;
-  z2.pos_f += 5;
+  yy2.pos_f -= 30;
+  z2.pos_f += 0;
   x3.pos_f += 0;
-  yy3.pos_f += 20;
+  yy3.pos_f += 30;
   z3.pos_f += 0;
-  x4.pos_f += 5;
-  yy4.pos_f += -20;
+  x4.pos_f += 0;
+  yy4.pos_f -= 30;
   z4.pos_f += 0;
+}
+
+// 3 PID controller will have control over each of these inputs before the model calculates r_values
+struct r attitude_model(double roll, double pitch, double yaw)
+{
+  struct r shoulders;
+
+  // front left
+  shoulders.r1.x = .5 * L_body * cos(yaw) * cos(pitch);
+  shoulders.r1.y = .5 * L_shoulder * cos(roll) + .5 * L_shoulder * sin(yaw);
+  shoulders.r1.z = L_COM + .5 * L_body * sin(pitch) + .5 * L_shoulder * sin(roll);
+
+  // front right
+  shoulders.r2.x = .5 * L_body * cos(yaw) * cos(pitch);
+  shoulders.r2.y = -.5 * L_shoulder * cos(roll) + .5 * L_shoulder * sin(yaw);
+  shoulders.r2.z = L_COM + .5 * L_body * sin(pitch) - .5 * L_shoulder * sin(roll);
+
+  // rear right
+  shoulders.r3.x = -.5 * L_body * cos(yaw) * cos(pitch);
+  shoulders.r3.y = -.5 * L_shoulder * cos(roll) - .5 * L_shoulder * sin(yaw);
+  shoulders.r3.z = L_COM - .5 * L_body * sin(pitch) - .5 * L_shoulder * sin(roll);
+
+  // rear left
+  shoulders.r4.x = .5 * L_body * cos(yaw) * cos(pitch);
+  shoulders.r4.y = .5 * L_shoulder * cos(roll) - .5 * L_shoulder * sin(yaw);
+  shoulders.r4.z = L_COM - .5 * L_body * sin(pitch) + .5 * L_shoulder * sin(roll);
+
+  return (shoulders);
 }

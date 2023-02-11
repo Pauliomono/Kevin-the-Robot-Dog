@@ -14,7 +14,7 @@ void packet_builder(char mnemon[7], char type, TYPE data_value)
   memcpy(time_bytes, &comm_time, sizeof comm_time);
   memcpy(mnemonic_bytes, &mnemon, sizeof mnemonic_bytes);
   memcpy(type_byte, &type, sizeof type);
-  memcpy(data_bytes, &data_value, sizeof data_value);
+  memcpy(data_bytes, &data_value, 8);
 
   for (int i = 0; i < 4; i++)
   {
@@ -147,6 +147,9 @@ Mnemonics to add:
 BATTLVL - Battery charge percentage
 PCKT_TX - # of packets sent (may help if there's data loss)
 PCKT_RX - # of packets recieved (may help if there's data loss)
+ROLLCMD - attitude roll command
+PIT_CMD - attitude pitch command
+YAW_CMD - attitude yaw command
 */
 
 /*
@@ -196,7 +199,9 @@ void comms_send()
 {
   int comm_time = millis();
 
+#ifdef COMM_ROLE_VEHICLE
 #ifdef SEND_RPY
+  memset(telem_packet, 0, 24);
   if ((comm_time % 50) == 0)
   {
     // Serial.println(Serial4.availableForWrite());
@@ -218,6 +223,7 @@ void comms_send()
   }
 #endif
 
+  memset(telem_packet, 0, 24);
   if ((comm_time % 50) == 24)
   {
     // STEPSTE - state in walking motion
@@ -226,6 +232,7 @@ void comms_send()
   }
 
 #ifdef SEND_ANGLES
+  memset(telem_packet, 0, 24);
   if ((comm_time % 50) == 0)
   {
     // H1A_TAR - leg 1 hip target angle
@@ -247,6 +254,7 @@ void comms_send()
 #endif
 
 #ifdef SEND_COORDS
+  memset(telem_packet, 0, 24);
   if ((comm_time % 50) == 0)
   {
     // H1A_TAR - leg 1 hip target angle
@@ -268,26 +276,8 @@ void comms_send()
 #endif
 
   // 4Hz data (250ms)
-
-  if ((comm_time % 250) == 24)
-  {
-    // FWDMOVE - move forward value
-    packet_builder("FWDMOVE", 'f', x_dist);
-    Serial4.write(telem_packet, 24);
-  }
-  else if ((comm_time % 250) == 32)
-  {
-    // SIDMOVE - move sideways value
-    packet_builder("SIDMOVE", 'f', steer2);
-    Serial4.write(telem_packet, 24);
-  }
-  else if ((comm_time % 250) == 74)
-  {
-    // YAWMOVE - rotate in place value
-    packet_builder("YAWMOVE", 'f', steer2);
-    Serial4.write(telem_packet, 24);
-  }
-  else if ((comm_time % 250) == 82)
+  memset(telem_packet, 0, 24);
+  if ((comm_time % 250) == 82)
   {
     // ACCEL_X - x acceleration
     packet_builder("ACCEL_X", 'd', x_accel);
@@ -307,28 +297,29 @@ void comms_send()
   }
 
 #ifndef SEND_RPY
+  memset(telem_packet, 0, 24);
   if ((comm_time % 250) == 174)
   {
-    // ROLLVAL - IMU roll value
+    // ROLLCMD - IMU roll value
     packet_builder("ROLLVAL", 'd', roll);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 250) == 182)
   {
-    // PIT_VAL - IMU pitch value
+    // PIT_CMD - IMU pitch value
     packet_builder("PIT_VAL", 'd', pitch);
     Serial4.write(telem_packet, 24);
   }
   else if ((comm_time % 250) == 190)
   {
-    // YAW_VAL - IMU yaw value
+    // YAW_CMD - IMU yaw value
     packet_builder("YAW_VAL", 'd', yaw);
     Serial4.write(telem_packet, 24);
   }
 #endif
 
   // 1Hz data (1000ms)
-
+  memset(telem_packet, 0, 24);
   if ((comm_time % 1000) == 224)
   {
     // PIDVLRP - PID roll proportional value
@@ -383,6 +374,102 @@ void comms_send()
     packet_builder("KEVTIME", 'i', comm_time); // placeholder
     Serial4.write(telem_packet, 24);
   }
+
+#endif
+
+#ifdef COMM_ROLE_CONTROLLER
+  // 10Hz data
+  memset(telem_packet, 0, 24);
+
+  if ((comm_time % 100) == 0)
+  {
+    // Serial.println(Serial4.availableForWrite());
+    // ROLLCMD - attitude roll command
+    packet_builder("ROLLCMD", 'd', roll_target);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 100) == 8)
+  {
+    // PIT_CMD - attitude pitch command
+    packet_builder("PIT_CMD", 'd', pitch_target);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 100) == 16)
+  {
+    // YAW_CMD - attitude yaw command
+    packet_builder("YAW_CMD", 'd', yaw_target);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 100) == 24)
+  {
+    // FWDMOVE - move forward value
+    packet_builder("FWDMOVE", 'f', x_dist);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 100) == 32)
+  {
+    // SIDMOVE - move sideways value
+    packet_builder("SIDMOVE", 'f', steer2);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 100) == 74)
+  {
+    // YAWMOVE - rotate in place value
+    packet_builder("YAWMOVE", 'f', steer2);
+    Serial4.write(telem_packet, 24);
+  }
+
+  // 1Hz data (1000ms)
+  memset(telem_packet, 0, 24);
+  if ((comm_time % 1000) == 224)
+  {
+    // PIDVLRP - PID roll proportional value
+    packet_builder("PIDVLRP", 'f', kpr);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 232)
+  {
+    // PIDVLRI - PID roll integral value
+    packet_builder("PIDVLRI", 'f', kir);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 474)
+  {
+    // PIDVLRD - PID roll derivative value
+    packet_builder("PIDVLRD", 'f', kdr);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 482)
+  {
+    // PIDVLPP - PID pitch proportional value
+    packet_builder("PIDVLPP", 'f', kpp);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 724)
+  {
+    // PIDVLPI - PID pitch integral value
+    packet_builder("PIDVLPI", 'f', kip);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 732)
+  {
+    // PIDVLPD - PID pitch derivative value
+    packet_builder("PIDVLPD", 'f', kdp);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 974)
+  {
+    // MODEVAL - mode that Kevin is in
+    packet_builder("MODEVAL", 'i', mode);
+    Serial4.write(telem_packet, 24);
+  }
+  else if ((comm_time % 1000) == 982)
+  {
+    // BALMODE - type of balance being used
+    packet_builder("BALMODE", 'i', mode); // placeholder
+    Serial4.write(telem_packet, 24);
+  }
+#endif
 }
 
 void comms_receive()
@@ -491,6 +578,7 @@ void comms_receive()
     {
 
       data_byte = Serial4.read();
+      comm_results.type = data_byte;
       comm_results.checksum2 = comm_results.checksum2 + data_byte;
 
 #ifdef SERIAL_MIRROR_TYPE
@@ -557,7 +645,6 @@ void comms_receive()
 
         int_buffer[i] = Serial4.read();
         comm_results.checksum2 = comm_results.checksum2 + int_buffer[i];
-
       }
 
       for (int i = 0; i < 4; i++)
@@ -566,7 +653,7 @@ void comms_receive()
       }
 
       memcpy(&comm_data.i, int_buffer, sizeof(comm_data.i));
-     
+
       comm_results.time = time_stamp;
       comm_results.mnemonic = mnemonic;
       comm_results.data.i = comm_data.i;
@@ -684,6 +771,7 @@ void comms_interpreter()
 {
   if (new_data == 1)
   {
+    Serial.println(mode);
 #ifdef COMM_ROLE_VEHICLE
     if (comm_results.mnemonic == "FWDMOVE")
     {
@@ -691,65 +779,110 @@ void comms_interpreter()
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "SIDMOVE")
+    else if (comm_results.mnemonic == "SIDMOVE")
     {
-      //steer2 = comm_results.data.f;
+      // steer2 = comm_results.data.f;
       new_data = 0;
     }
-
-    if (comm_results.mnemonic == "YAWMOVE")
+    else if (comm_results.mnemonic == "YAWMOVE")
     {
       steer2 = comm_results.data.f;
       new_data = 0;
     }
+    
+    else if (comm_results.mnemonic == "ROLLCMD")
+    {
+      roll_target = comm_results.data.d;
+      new_data = 0;
+    }
 
-    if (comm_results.mnemonic == "MODEVAL")
+    else if (comm_results.mnemonic == "PIT_CMD")
+    {
+      pitch_target = comm_results.data.d;
+      new_data = 0;
+    }
+
+    else if (comm_results.mnemonic == "YAW_CMD")
+    {
+      yaw_target = comm_results.data.d;
+      new_data = 0;
+    }
+
+    else if (comm_results.mnemonic == "MODEVAL")
     {
       mode = comm_results.data.i;
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "PIDVLRP")
+    else if (comm_results.mnemonic == "PIDVLRP")
     {
       kpr = comm_results.data.f;
       rollPID.SetTunings(kpr, kir, kdr);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "PIDVLRI")
+    else if (comm_results.mnemonic == "PIDVLRI")
     {
       kir = comm_results.data.f;
       rollPID.SetTunings(kpr, kir, kdr);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "PIDVLRD")
+    else if (comm_results.mnemonic == "PIDVLRD")
     {
       kdr = comm_results.data.f;
       rollPID.SetTunings(kpr, kir, kdr);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "PIDVLPP")
+    else if (comm_results.mnemonic == "PIDVLPP")
     {
       kpp = comm_results.data.f;
       pitchPID.SetTunings(kpp, kip, kdp);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "PIDVLPI")
+    else if (comm_results.mnemonic == "PIDVLPI")
     {
       kip = comm_results.data.f;
       pitchPID.SetTunings(kpp, kip, kdp);
       new_data = 0;
     }
 
-    if (comm_results.mnemonic == "PIDVLPD")
+    else if (comm_results.mnemonic == "PIDVLPD")
     {
       kdp = comm_results.data.f;
       pitchPID.SetTunings(kpp, kip, kdp);
       new_data = 0;
     }
+    else
+    {
+      new_data = 0;
+      return;
+    }
+
+#ifdef COMM_SHOW_INTERPRETER
+    Serial.print(comm_results.time);
+    Serial.print("\t");
+    Serial.print(comm_results.mnemonic);
+    Serial.print("\t");
+    if (comm_results.type == 'd')
+    {
+      Serial.println(comm_results.data.d);
+    }
+    else if (comm_results.type == 'f')
+    {
+      Serial.println(comm_results.data.f);
+    }
+    else if (comm_results.type == 'i')
+    {
+      Serial.println(comm_results.data.i);
+    }
+    else if (comm_results.type == 'b')
+    {
+      Serial.println(comm_results.data.b);
+    }
+#endif
 
 #endif
 
@@ -891,7 +1024,22 @@ void comms_interpreter()
     Serial.print("\t");
     Serial.print(comm_results.mnemonic);
     Serial.print("\t");
-    Serial.println(comm_results.data.d);
+    if (comm_results.type == 'd')
+    {
+      Serial.println(comm_results.data.d);
+    }
+    else if (comm_results.type == 'f')
+    {
+      Serial.println(comm_results.data.f);
+    }
+    else if (comm_results.type == 'i')
+    {
+      Serial.println(comm_results.data.i);
+    }
+    else if (comm_results.type == 'b')
+    {
+      Serial.println(comm_results.data.b);
+    }
 #endif
 #endif
   }

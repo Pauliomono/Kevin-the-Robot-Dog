@@ -29,9 +29,9 @@ int debug_point = 1;
 int n_debug_points = 3;
 
 // code control vars
-int state_time = 100;
-int interpolation_interval;
-int n_interps = 5;
+int state_time;
+int interpolation_interval = 20; // keep this a constant - servos won't update quicker than 20ms
+int n_interps;
 int state = 1;
 int mode = 0;
 int n_states = 6;
@@ -44,7 +44,7 @@ int t_old;
 int t_old_state;
 int comm_timer;
 int imu_timer;
-int bal_timer;
+int mode_timer;
 
 // SoftwareSerial Remote (21, 20);
 String datapacket;
@@ -74,6 +74,14 @@ struct points z3;
 struct points x4;
 struct points yy4;
 struct points z4;
+struct r shoulders;
+// these all need to be measured
+float L_body = 100;
+float L_shoulder = 100;
+float L_COM = 100;
+float roll_input = 0;
+float pitch_input = 0;
+float yaw_input = 0;
 
 // leg position control vars
 float x_dist = 0;
@@ -102,24 +110,29 @@ double x_accel;
 double y_accel;
 double z_accel;
 
-double yaw_desired = 0;
-double pitch_desired = 1; // 1
-double roll_desired = 1;
+double yaw_target = 0;
+double pitch_target = 0;
+double roll_target = 0;
+double yaw_commanded = 0;
+double pitch_commanded = 0;
+double roll_commanded = 0;
 
 #ifdef PID_BALANCE_ENABLE
 // PID setup
-float kpp = 0;   //.45*kup;
+float kpp = 0.0; //.45*kup;
 float kip = 0.0; //.54*kup/tup;
-float kdp = 0;   //.54*kup*tup;
-PID pitchPID(&pitch, &pitch_angle1, &pitch_desired, kpp, kip, kdp, DIRECT);
-float kpr = .0;   //.05;
-float kir = 0.01; //.01;
-float kdr = 0.01; //.01;
-PID rollPID(&roll, &roll_angle1, &roll_desired, kpr, kir, kdr, DIRECT);
+float kdp = 0.0; //.54*kup*tup;
+PID pitchPID(&pitch, &pitch_commanded, &pitch_target, kpp, kip, kdp, DIRECT);
+
+float kpr = 0.0; //.05;
+float kir = 0.0; //.01;
+float kdr = 0.0; //.01;
+PID rollPID(&roll, &roll_commanded, &roll_target, kpr, kir, kdr, DIRECT);
+
 float kpy = 0.0;
 float kiy = 0.0;
 float kdy = 0.0;
-PID yawPID(&yaw, &yaw1, &yaw_desired, kpy, kiy, kdy, DIRECT);
+PID yawPID(&yaw, &yaw_commanded, &yaw_target, kpy, kiy, kdy, DIRECT);
 
 #endif
 /*
@@ -293,30 +306,32 @@ void setup() // setup and initialization code
       Serial.println("PWM setup complete");
 #endif
 
+      state = 0;
+      get_xyz();
       // set initial leg position
       Serial.println("Initializing leg kinematics:");
-      x1.pos = 0;
-      yy1.pos = 0;
-      z1.pos = leg_height;
-      x2.pos = x1.pos;
-      yy2.pos = yy1.pos;
-      z2.pos = z1.pos;
-      x3.pos = x1.pos;
-      yy3.pos = yy1.pos;
-      z3.pos = z1.pos;
-      x4.pos = x1.pos;
-      yy4.pos = yy1.pos;
-      z4.pos = z1.pos;
-      offset();
+      shoulders = attitude_model(roll_commanded, pitch_commanded, yaw_commanded);
+      x1.pos = x1.pos_f;
+      yy1.pos = yy1.pos_f;
+      z1.pos = z1.pos_f;
+      x2.pos = x2.pos_f;
+      yy2.pos = yy2.pos_f;
+      z2.pos = z2.pos_f;
+      x3.pos = x3.pos_f;
+      yy3.pos = yy3.pos_f;
+      z3.pos = z3.pos_f;
+      x4.pos = x4.pos_f;
+      yy4.pos = yy4.pos_f;
+      z4.pos = z4.pos_f;
       Serial.println("leg 0 position set");
 
       // velocities
-      x1.vel = 0;
-      yy1.vel = 0;
-      z1.vel = 0;
-      x2.vel = 0;
-      yy2.vel = 0;
-      z2.vel = 0;
+      x1.vel = x1.vel_f;
+      yy1.vel = yy1.vel_f;
+      z1.vel = z1.vel_f;
+      x2.vel = x2.vel_f;
+      yy2.vel = yy2.vel_f;
+      z2.vel = z2.vel_f;
       x3.vel = x1.vel;
       yy3.vel = -yy1.vel;
       z3.vel = z1.vel;
@@ -326,12 +341,12 @@ void setup() // setup and initialization code
       Serial.println("leg 0 velocity set");
 
       // accelerations
-      x1.accel = 0;
-      yy1.accel = 0;
-      z1.accel = 0;
-      x2.accel = 0;
-      yy2.accel = 0;
-      z2.accel = 0;
+      x1.accel = x1.accel_f;
+      yy1.accel = yy1.accel_f;
+      z1.accel = z1.accel_f;
+      x2.accel = x2.accel_f;
+      yy2.accel = yy2.accel_f;
+      z2.accel = z2.accel_f;
       x3.accel = x1.accel;
       yy3.accel = -yy1.accel;
       z3.accel = z1.accel;
@@ -340,49 +355,6 @@ void setup() // setup and initialization code
       z4.accel = z2.accel;
       Serial.println("leg 0 acceleration set");
 
-      x1.pos_f = 0;
-      yy1.pos_f = 0;
-      z1.pos_f = leg_height;
-      x2.pos_f = x1.pos_f;
-      yy2.pos_f = yy1.pos_f;
-      z2.pos_f = z1.pos_f;
-      x3.pos_f = x1.pos_f;
-      yy3.pos_f = yy1.pos_f;
-      z3.pos_f = z1.pos_f;
-      x4.pos_f = x1.pos_f;
-      yy4.pos_f = yy1.pos_f;
-      z4.pos_f = z1.pos_f;
-      offset();
-      Serial.println("leg final position set");
-
-      // velocities
-      x1.vel_f = 0;
-      yy1.vel_f = 0;
-      z1.vel_f = 0;
-      x2.vel_f = 0;
-      yy2.vel_f = 0;
-      z2.vel_f = 0;
-      x3.vel_f = x1.vel_f;
-      yy3.vel_f = -yy1.vel_f;
-      z3.vel_f = z1.vel_f;
-      x4.vel_f = x2.vel_f;
-      yy4.vel_f = yy2.vel_f;
-      z4.vel_f = z2.vel_f;
-      Serial.println("leg final velocity set");
-
-      // accelerations
-      x1.accel_f = 0;
-      yy1.accel_f = 0;
-      z1.accel_f = 0;
-      x2.accel_f = 0;
-      yy2.accel_f = 0;
-      z2.accel_f = 0;
-      x3.accel_f = x1.accel_f;
-      yy3.accel_f = -yy1.accel_f;
-      z3.accel_f = z1.accel_f;
-      x4.accel_f = x2.accel_f;
-      yy4.accel_f = yy2.accel_f;
-      z4.accel_f = z2.accel_f;
       Serial.println("leg final acceleration set");
       Serial.println("leg kinematics initialization complete.");
 
@@ -422,7 +394,8 @@ void setup() // setup and initialization code
       Serial.println("IMU setup complete");
 
       // sets # of points interpolated between servo positions: more = smoother
-      interpolation_interval = state_time / n_interps;
+      // edit - currently locked servo updates to 50hz due to servo limitations
+      n_interps = state_time / interpolation_interval;
       // PID start
 
 #ifdef PID_BALANCE_ENABLE
@@ -434,9 +407,9 @@ void setup() // setup and initialization code
       pitchPID.SetOutputLimits(-20, 20);
       // pitchPID.SetSampleTime(10);
 
-      // rollPID.SetMode(AUTOMATIC);
+      rollPID.SetMode(AUTOMATIC);
       rollPID.SetOutputLimits(-20, 20);
-      // rollPID.SetSampleTime(10);
+      rollPID.SetSampleTime(10);
 #endif
 
 #ifdef INPUT_SHAPING
@@ -541,6 +514,37 @@ void loop()
 
       // PID_tune();
 
+      // mode state timing control
+      if ((t % 250 == 0) && (mode_timer != t))
+      {
+            if (mode == 0)
+            {
+                  state_time = 1000;
+                  n_interps = state_time / interpolation_interval;
+            }
+            if (mode == 1)
+            {
+                  state_time = 100;
+                  n_interps = state_time / interpolation_interval;
+            }
+            if (mode == 2)
+            {
+                  state_time = 100;
+                  n_interps = state_time / interpolation_interval;
+            }
+            if (mode == 3)
+            {
+                  state_time = 1000;
+                  n_interps = state_time / interpolation_interval;
+            }
+            if (mode == 4)
+            {
+                  state_time = 1000;
+                  n_interps = state_time / interpolation_interval;
+            }
+            mode_timer = t;
+      }
+
       // static test modes
       if ((mode == 0) || (mode == 2))
       {
@@ -552,58 +556,10 @@ void loop()
                   tf = t0 + state_time;
 
                   // define leg positions
-                  x1.pos_f = x_dist;
-                  yy1.pos_f = steer2;
-                  z1.pos_f = leg_height;
-                  x2.pos_f = x1.pos_f;
-                  yy2.pos_f = yy1.pos_f;
-                  z2.pos_f = leg_height;
-                  x3.pos_f = -x1.pos_f;
-                  yy3.pos_f = steer2;
-                  z3.pos_f = leg_height;
-                  x4.pos_f = -x1.pos_f;
-                  yy4.pos_f = yy3.pos_f;
-                  z4.pos_f = leg_height;
-                  offset();
-
-                  // velocities
-                  x1.vel_f = 0;
-                  yy1.vel_f = 0;
-                  z1.vel_f = 0;
-                  x2.vel_f = 0;
-                  yy2.vel_f = 0;
-                  z2.vel_f = 0;
-                  x3.vel_f = x1.vel_f;
-                  yy3.vel_f = -yy1.vel_f;
-                  z3.vel_f = z1.vel_f;
-                  x4.vel_f = x2.vel_f;
-                  yy4.vel_f = yy2.vel_f;
-                  z4.vel_f = z2.vel_f;
-
-                  // accelerations
-                  x1.accel_f = 0;
-                  yy1.accel_f = 0;
-                  z1.accel_f = 0;
-                  x2.accel_f = 0;
-                  yy2.accel_f = 0;
-                  z2.accel_f = 0;
-                  x3.accel_f = x1.accel_f;
-                  yy3.accel_f = -yy1.accel_f;
-                  z3.accel_f = z1.accel_f;
-                  x4.accel_f = x2.accel_f;
-                  yy4.accel_f = yy2.accel_f;
-                  z4.accel_f = z2.accel_f;
-#ifdef PID_BALANCE_ENABLE
-                  balance();
-#endif
+                  state = 0;
+                  get_xyz();
             }
-            else if (((state_time / 4) % (t - t_old_state) == 0) && (bal_timer != t))
-            {
-#ifdef PID_BALANCE_ENABLE
-                  balance();         
-#endif
-bal_timer = t;
-            }
+
 #ifdef DEBUG_TIMER
             debug_timer(); // 4
 #endif
@@ -611,6 +567,9 @@ bal_timer = t;
             if (t - t_old >= interpolation_interval)
             {
                   t_old = t;
+#ifdef PID_BALANCE_ENABLE
+                  get_xyz();
+#endif
 
                   // interpolate to final angles
                   // IK_interpolate2(t - state_time/2, t + state_time/2, t);
@@ -653,22 +612,15 @@ bal_timer = t;
                   state = 3;
                   // define leg positions
                   get_xyz();
-#ifdef PID_BALANCE_ENABLE
-                  balance();
-#endif
-            }
-            else if (((state_time / 4) % (t - t_old_state) == 0) && (bal_timer != t))
-            {
-#ifdef PID_BALANCE_ENABLE
-                  balance();        
-#endif
-bal_timer = t;
             }
 
             // interpolation timing
             if (t - t_old >= interpolation_interval)
             {
                   t_old = t;
+#ifdef PID_BALANCE_ENABLE
+                  get_xyz();
+#endif
 
                   // interpolate to final angles
                   IK_interpolate2(t0, tf, t);
@@ -699,16 +651,6 @@ bal_timer = t;
                         state = 1;
                   }
                   get_xyz();
-#ifdef PID_BALANCE_ENABLE
-                  balance();
-#endif
-            }
-            else if (((state_time / 4) % (t - t_old_state) == 0) && (bal_timer != t))
-            {
-#ifdef PID_BALANCE_ENABLE
-                  balance();
-#endif
-                  bal_timer = t;
             }
 
             // walking states - breaks step motion into 6 points (states)
@@ -717,7 +659,9 @@ bal_timer = t;
             if (t - t_old >= interpolation_interval)
             {
                   t_old = t;
-
+#ifdef PID_BALANCE_ENABLE
+                  get_xyz();
+#endif
                   // debug
 
 #ifdef PRINT_LEG_XYZ
@@ -760,6 +704,39 @@ bal_timer = t;
 #ifdef DEBUG_SERIAL_PRINT
                   Serial.println("");
 #endif
+            }
+      }
+
+      if (mode == 4)
+      {
+            // timing control
+            if (t - t_old_state >= state_time)
+            {
+                  t_old_state = t;
+                  t0 = t;
+                  tf = t0 + state_time;
+                  state = 0;
+                  // define leg positions
+                  get_xyz();
+            }
+
+            // interpolation timing
+            if (t - t_old >= interpolation_interval)
+            {
+                  t_old = t;
+#ifdef PID_BALANCE_ENABLE
+                  get_xyz();
+#endif
+
+                  // interpolate to final angles
+                  IK_interpolate2(t0, tf, t);
+
+                  leg1 = IK_final(x1.pos, yy1.pos, z1.pos);
+                  leg2 = IK_final(x2.pos, yy2.pos, z2.pos);
+                  leg3 = IK_final(x3.pos, yy3.pos, z3.pos);
+                  leg4 = IK_final(x4.pos, yy4.pos, z4.pos);
+                  // write angles to servos
+                  write_servos();
             }
       }
 }

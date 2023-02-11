@@ -9,6 +9,9 @@
 extern double yaw;
 extern double pitch;
 extern double roll;
+extern double yaw_target;
+extern double pitch_target;
+extern double roll_target;
 extern int state;
 extern struct angles leg1;
 extern struct points x1;

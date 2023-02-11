@@ -18,6 +18,9 @@ extern int packet2;
 extern double yaw;
 extern double pitch;
 extern double roll;
+extern double yaw_target;
+extern double pitch_target;
+extern double roll_target;
 extern int state;
 extern struct angles leg1;
 extern struct points x1;
@@ -35,8 +38,6 @@ extern float kpr;
 extern float kir;
 extern float kdr;
 
-
-
 // comms receive globals
 union data_type
   {
@@ -51,6 +52,7 @@ struct comm
     uint16_t checksum2;
     int time;
     String mnemonic;
+    char type;
     union data_type data;
   };
 
